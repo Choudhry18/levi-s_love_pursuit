@@ -56,7 +56,7 @@ lazy val sharedJs = shared.js
 lazy val commonSettings = Seq(
   scalaVersion := "2.13.12",
   organization := "edu.trinity",
-  libraryDependencies += "org.playframework" %% "play-json" % "3.0.2"
+  libraryDependencies += "org.playframework" %%% "play-json" % "3.0.2"
 
 )
 
