@@ -2,8 +2,13 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-GET        /                             controllers.Application.index
+# Chat page
+GET         /chat                       controllers.ChatController.load
+GET         /getChats                   controllers.ChatController.chats 
+# post the recipient username to get chat content between current user and recipient
+POST        /getChatContent             controllers.ChatController.getChatContent
+# post the message to be send with its recipient
+POST        /sendMessage             controllers.ChatController.sendMessage
 
 # Prefix must match `play.assets.urlPrefix`
 GET        /assets/*file                 controllers.Assets.at(file)

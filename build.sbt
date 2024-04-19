@@ -36,7 +36,7 @@ lazy val client = (project in file("client")).settings(commonSettings).settings(
   scalacOptions += "-Ymacro-annotations",
   scalaJSUseMainModuleInitializer := true,
   libraryDependencies ++= Seq(
-    "org.scala-js" %%% "scalajs-dom" % "2.8.0",
+    "org.scala-js" %%% "scalajs-dom" % "2.2.0",
 		"me.shadaj" %%% "slinky-core" % "0.7.4",
 		"me.shadaj" %%% "slinky-web" % "0.7.4"
   )

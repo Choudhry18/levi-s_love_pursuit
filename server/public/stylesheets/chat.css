@@ -1,0 +1,138 @@
+body {
+    margin: 0%;
+    font-family: 'Open Sans';
+    overflow: hidden;
+}
+
+#chatPage {
+    display: grid;
+    grid-template-rows: 1.3fr 4.7fr;
+    grid-template-columns: 8fr 12fr;
+    justify-items: center;
+    width: 100%;
+    height: 100vh;
+    color: #410E3B;
+}
+
+/* left search bar and chat bars */
+
+#searchBarContainer {
+    grid-column: 1;
+    grid-row: 1;
+    text-align: center;
+    width: 100%;
+    background-color: #FFF7FF;
+}
+
+#chatBarsContainer {
+    grid-column: 1;
+    grid-row: 2;
+    text-align: center;
+    width: 100%;
+    background-color: #FFF7FF;
+    overflow: auto;
+}
+
+.chatBar {
+    background-color: transparent;
+    border: none;
+    margin-bottom: 10px;
+    cursor: pointer;
+    height: 80px;
+}
+
+.chatBarName {
+    position: relative;
+    bottom: 55px;
+    background-color: transparent; 
+    pointer-events: none;
+    font-weight: bold; 
+    font-size: 20px;
+    color: #410E3B;
+}
+
+.chatBarBubble {
+    cursor: pointer;
+}
+
+/* right chat box */
+
+#chatBoxSection {
+    grid-column: 2;
+    grid-row: 2;
+    width: 85%;
+    height: 100%;
+}
+
+/* chat box */
+
+#chatBox {
+    height: 70%;
+    border-radius: 20px;  
+    border: 3px solid #410E3B;
+    margin-bottom: 10px;
+
+}
+
+#recipientName {
+    font-weight: bold;
+    margin-left: 30px;
+}
+
+#chatContent {
+    margin-left: 30px;
+    margin-right: 30px;
+    height: 80%;
+    overflow-y: auto;
+    /* hide scroll bar */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+/* hide scroll bar for browsers */
+#chatContent::-webkit-scrollbar {
+    display: none; /* WebKit (Chrome, Safari, etc.) */
+}
+
+.recipientMessage {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+}
+
+.userMessage {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+
+.message {
+    width: auto;
+    max-width: 45%;
+    padding: 20px;
+    border-radius: 20px;
+    
+}
+
+.recipientMessage .message {
+    background-color: #FFF7FF;
+    color: black;
+}
+
+.userMessage .message {
+    background-color: #410E3B;
+    color: white;
+}
+
+/* chat input box */
+
+#chatInput {
+    width: 95%;
+    height: 8%;
+    padding-left: 15px;
+    padding-right: 15px;
+    font-size: 20px;
+    border-radius: 20px;  
+    border: 3px solid #410E3B;
+}
+
