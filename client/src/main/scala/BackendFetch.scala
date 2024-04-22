@@ -29,6 +29,47 @@ object BackendFetch {
     //error handling?
   }
 
+  class MyRequestInit(
+        method: js.UndefOr[HttpMethod] = js.undefined,
+        headers: js.UndefOr[HeadersInit] = js.undefined,
+        body: js.UndefOr[BodyInit] = js.undefined,
+        referrer: js.UndefOr[String] = js.undefined,
+        referrerPolicy: js.UndefOr[ReferrerPolicy] = js.undefined,
+        mode: js.UndefOr[RequestMode] = js.undefined,
+        credentials: js.UndefOr[RequestCredentials] = js.undefined,
+        cache: js.UndefOr[RequestCache] = js.undefined,
+        redirect: js.UndefOr[RequestRedirect] = js.undefined,
+        integrity: js.UndefOr[String] = js.undefined,
+        keepalive: js.UndefOr[Boolean] = js.undefined,
+        signal: js.UndefOr[AbortSignal] = js.undefined,
+        duplex: js.UndefOr[RequestDuplex] = js.undefined,
+        window: js.UndefOr[Null] = js.undefined
+    ) extends RequestInit
+
+  def oldFetchPost[A, B](url: String, csrfToken: String, 
+      data: A, success: B => Unit, error: JsError => Unit)(implicit
+      writes: Writes[A], reads: Reads[B], ec: ExecutionContext): Unit = {
+    val headers = new Headers()
+    headers.set("Content-Type", "application/json")
+    headers.set("Csrf-Token", csrfToken)
+    val myRequestInit = new MyRequestInit(
+        method = HttpMethod.POST,
+        headers = headers,
+        body = Json.toJson(data).toString
+    )
+    Fetch.fetch(url, myRequestInit)
+      .flatMap(res => res.text())
+      .map { data => 
+        //B is whatever we receive from the server
+        Json.fromJson[B](Json.parse(data)) match {
+          case JsSuccess(b, path) =>
+            success(b)
+          case e @ JsError(_) =>
+            error(e)
+        }
+    }
+  }
+
   def fetchGet[B](url: String, success: B => Unit, error: JsError => Unit)(implicit
       reads: Reads[B], ec: ExecutionContext): Unit = {
     Fetch.fetch(url)

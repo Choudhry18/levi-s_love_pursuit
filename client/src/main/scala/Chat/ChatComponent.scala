@@ -14,6 +14,7 @@ import org.scalajs.dom._
 import play.api.libs.json.Json
 import scala.scalajs.js
 import slinky.core.SyntheticEvent
+import scala.tools.nsc.doc.base.comment.Bold
 
 @react class ChatComponent extends Component {
   case class Props(recipient: String)
@@ -36,6 +37,9 @@ import slinky.core.SyntheticEvent
 
   override def componentDidMount(): Unit = {
     fetchChatContent()
+    //scroll down to newest message
+    val chatContentScrollSection = document.getElementById("chatContent").asInstanceOf[org.scalajs.dom.html.Input]
+    chatContentScrollSection.scrollTop = chatContentScrollSection.scrollHeight
   }
 
   override def componentDidUpdate(prevProps: Props, prevState: State): Unit = {
@@ -43,6 +47,9 @@ import slinky.core.SyntheticEvent
     if (props.recipient != prevProps.recipient) {
       fetchChatContent()
     }
+    //scroll down to newest message
+    val chatContentScrollSection = document.getElementById("chatContent").asInstanceOf[org.scalajs.dom.html.Input]
+    chatContentScrollSection.scrollTop = chatContentScrollSection.scrollHeight
   }
   
   //TODO: display something if your chat is empty
@@ -57,9 +64,9 @@ import slinky.core.SyntheticEvent
         }
       )
       setState(state.copy(newMessage = ""))
-      // val chatContentScrollSection = document.getElementById("chatContent").asInstanceOf[org.scalajs.dom.html.Input]
-      // // chatContentScrollSection.scrollTop = chatContentScrollSection.scrollHeight
-      // // println(chatContentScrollSection.scrollTop)
+      //scroll down to newest message
+      val chatContentScrollSection = document.getElementById("chatContent").asInstanceOf[org.scalajs.dom.html.Input]
+      chatContentScrollSection.scrollTop = chatContentScrollSection.scrollHeight
     }
   }
 
