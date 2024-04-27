@@ -1,0 +1,11 @@
+@()(implicit request: RequestHeader)
+
+@main("Chat"){
+    <div id="react-root"></div>
+    <input type="hidden" id="chatPage" value="">
+    <input type="hidden" id="csrfToken" value="@helper.CSRF.getToken.value">
+    <input type="hidden" id="chatsRoute" value="@routes.ChatController.chats">
+    <input type="hidden" id="getChatContentRoute" value="@routes.ChatController.getChatContent">
+    <input type="hidden" id="sendMessageRoute" value="@routes.ChatController.sendMessage">
+    <input type="hidden" id="chatBarImgRoute" value="@routes.Assets.versioned("/images/chat.png")">
+}
