@@ -1,0 +1,41 @@
+@()(implicit request: RequestHeader, flash: Flash)
+
+@main("Authentication"){
+    <div id="contents">Authentication Running</div>
+
+    <div id="login-section">
+        <h2>Login</h2>
+        <br>
+        Username: <input type="text" id="loginName">
+        <br>
+        Password: <input type="password" id="loginPass">
+        <br>
+        <button onclick="login()">login</button>
+
+        <h2>Create User</h2>
+        <br>
+        Username: <input type="text" id="createName">
+        <br>
+        Password: <input type="password" id="createPass">
+        <br>
+        <button onclick="createUser()">Create User</button>
+    </div>
+
+    <div id="task-section" hidden>
+        <h2>Task List 6</h2>
+        <br>
+
+        <ul id="task-list">
+        </ul>
+
+        <div>
+            <button onclick="logout()">logout</button>
+        </div>
+    </div>
+
+    <input type="hidden" id="version6" value="">
+    <input type="hidden" id="csrfToken" value="@helper.CSRF.getToken.value">
+    <input type="hidden" id="validateRoute" value="@routes.TaskList4.validate">
+    <input type="hidden" id="createRoute" value="@routes.TaskList4.createUser">
+    <input type="hidden" id="logoutRoute" value="@routes.TaskList4.logout">
+}

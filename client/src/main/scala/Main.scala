@@ -1,6 +1,10 @@
 package playscala
 
 import org.scalajs.dom
+import shared.SharedMessages
+import org.scalajs.dom
+import org.scalajs.dom.html
+import Authentication.Version6
 
 import slinky.web.ReactDOM
 import slinky.web.html._
@@ -16,6 +20,10 @@ object Main {
         ChatPageComponent(),
         dom.document.getElementById("react-root")
       )
+    }
+
+    if(dom.document.getElementById("version6") != null){
+        Version6.init()
     }
   }
 }

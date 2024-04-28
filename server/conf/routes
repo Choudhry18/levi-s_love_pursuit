@@ -11,6 +11,12 @@ POST        /getChatContent             controllers.ChatController.getChatConten
 # post the message to be send with its recipient
 POST        /sendMessage             controllers.ChatController.sendMessage
 
+GET        /load6                       controllers.Authentication.load
+GET        /load4                       controllers.TaskList4.load
+POST       /validate4                   controllers.TaskList4.validate
+GET        /logout4                     controllers.TaskList4.logout
+POST       /createUser4                 controllers.TaskList4.createUser
+
 # Prefix must match `play.assets.urlPrefix`
 GET        /assets/*file                 controllers.Assets.at(file)
 GET        /versionedAssets/*file        controllers.Assets.versioned(path="/public", file: Asset)
