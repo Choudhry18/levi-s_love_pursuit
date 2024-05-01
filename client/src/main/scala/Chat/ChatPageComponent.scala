@@ -9,22 +9,21 @@ import org.scalajs.dom.document
 import org.scalajs.dom.html
 import slinky.web.html._
 
+
 @react class ChatPageComponent extends Component {
   type Props = Unit
   case class State(chats: Seq[String], chatContentRecipient: String)
+  def initialState: State = State(Nil, "")
+
   implicit val ec = scala.concurrent.ExecutionContext.global
 
   val chatsRoute = document.getElementById("chatsRoute").asInstanceOf[html.Input].value
   val chatBarImgRoute = document.getElementById("chatBarImgRoute").asInstanceOf[org.scalajs.dom.html.Input].value
 
-
-  def initialState: State = State(Nil, "")
-
   override def componentDidMount(): Unit = {
-    BackendFetch.fetchGet(chatsRoute, 
+    FetchJson.fetchGet(chatsRoute, 
     (jsonChats : Seq[String]) => 
-      {setState(state.copy(chats = jsonChats, chatContentRecipient = jsonChats(0)))},
-     e => {println("Fetch error: " + e)})
+      {setState(state.copy(chats = jsonChats, chatContentRecipient = jsonChats(0)))})
   }
   
   //TODO: display something if your chat is empty
