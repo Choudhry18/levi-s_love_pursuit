@@ -20,22 +20,20 @@ import play.api.libs.json.Writes
 import play.api.libs.json.Reads
 
 object FetchJson {
-  def fetchPost[A, B](url: String, csrfToken: String,
-      data: A, success: B => Unit)(implicit
-      writes: Writes[A], reads: Reads[B], ec: ExecutionContext): Unit = {
+  def fetchPost[A, B](url: String, csrfToken: String, data: A, success: B => Unit)
+  (implicit writes: Writes[A], reads: Reads[B], ec: ExecutionContext): Unit = {
     val oheaders = new Headers()
     oheaders.set("Content-Type", "application/json")
     oheaders.set("Csrf-Token", csrfToken)
     val ri = new dom.RequestInit() {
-        this.method = HttpMethod.POST
-        mode = RequestMode.cors 
-        headers = oheaders
-        body = Json.toJson(data).toString
+      this.method = HttpMethod.POST
+      mode = RequestMode.cors 
+      headers = oheaders
+      body = Json.toJson(data).toString
     }
 
     Fetch.fetch(url, ri)
-      .flatMap(res => res.text())
-      .map { data => 
+      .flatMap(res => res.text()).map { data => 
         Json.fromJson[B](Json.parse(data)) match {
           case JsSuccess(b, path) =>
             success(b)
