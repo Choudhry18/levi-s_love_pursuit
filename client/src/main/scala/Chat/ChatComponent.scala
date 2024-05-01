@@ -13,27 +13,32 @@ import play.api.libs.json.JsError
 import org.scalajs.dom._
 import play.api.libs.json.Json
 import scala.scalajs.js
-import slinky.core.SyntheticEvent
-import scala.tools.nsc.doc.base.comment.Bold
+import models.ReadsAndWrites._
+import models.UserMessage
 
 @react class ChatComponent extends Component {
   case class Props(recipient: String)
-  case class State(chat: Seq[(String, String)], newMessage : String)
-  implicit val ec = scala.concurrent.ExecutionContext.global
+  case class State(chat: Seq[UserMessage], newMessage : String)
+  def initialState: State = State(Nil, "")
 
+  implicit val ec = scala.concurrent.ExecutionContext.global
   val csrfToken = document.getElementById("csrfToken").asInstanceOf[org.scalajs.dom.html.Input].value
   val getChatContentRoute = document.getElementById("getChatContentRoute").asInstanceOf[org.scalajs.dom.html.Input].value
   val chatsRoute = document.getElementById("chatsRoute").asInstanceOf[org.scalajs.dom.html.Input].value
   val sendMessageRoute = document.getElementById("sendMessageRoute").asInstanceOf[org.scalajs.dom.html.Input].value
+  val loginRoute = document.getElementById("loginRoute").asInstanceOf[org.scalajs.dom.html.Input].value
 
 
+  //getting chat content by fetch post the recipient name
   def fetchChatContent(): Unit = {
-    BackendFetch.fetchPost(getChatContentRoute, csrfToken, props.recipient, 
-      (chatContent) => {
-        setState(state.copy(chat = BackendFetch.parseChatContent(chatContent)))
-      })
+    val data = props.recipient
+    FetchJson.fetchPost(getChatContentRoute, csrfToken, data, 
+      (chatContent : Seq[UserMessage]) => {
+        //if illegal access or no session => redirect
+        if (!chatContent.isEmpty) setState(state.copy(chat = chatContent)) else setState(state.copy(chat = Nil))
+      }
+    )
   }
-  def initialState: State = State(Nil, "")
 
   override def componentDidMount(): Unit = {
     fetchChatContent()
@@ -42,6 +47,7 @@ import scala.tools.nsc.doc.base.comment.Bold
     chatContentScrollSection.scrollTop = chatContentScrollSection.scrollHeight
   }
 
+  //activate whenever a new message has been sent
   override def componentDidUpdate(prevProps: Props, prevState: State): Unit = {
     // Fetch new chat content when recipient changes
     if (props.recipient != prevProps.recipient) {
@@ -52,16 +58,14 @@ import scala.tools.nsc.doc.base.comment.Bold
     chatContentScrollSection.scrollTop = chatContentScrollSection.scrollHeight
   }
   
-  //TODO: display something if your chat is empty
-
-  def handleSubmit(key : String) : Unit = {
+  //handling user sending messages
+  def sendMessage(key : String) : Unit = {
     //TODO handle errors somehow
     if (key == "Enter") {
       // println("Sending " + state.newMessage)
-      BackendFetch.fetchPost(sendMessageRoute, csrfToken, (props.recipient, state.newMessage).toString(), 
-        (success) => {if (BackendFetch.parseBoolean(success)) {fetchChatContent()}
-          else println("couldn't send message")
-        }
+      val data = UserMessage(props.recipient, state.newMessage)
+      FetchJson.fetchPost(sendMessageRoute, csrfToken, data, 
+        (bool : Boolean) => {if (bool) fetchChatContent() else println("failed to send message")} 
       )
       setState(state.copy(newMessage = ""))
       //scroll down to newest message
@@ -76,18 +80,17 @@ import scala.tools.nsc.doc.base.comment.Bold
         h1( id:= "recipientName", props.recipient),
         div ( id:= "chatContent",
           state.chat.zipWithIndex.map {case (message, i) => 
-            if (message._1 == props.recipient) {
-              div(key := i.toString, className := "recipientMessage", div(className := "message", message._2))
+            if (message.username == props.recipient) {
+              div(key := i.toString, className := "recipientMessage", div(className := "message", message.message))
             } else {
-              div(key := i.toString, className := "userMessage", div(className := "message", message._2))
+              div(key := i.toString, className := "userMessage", div(className := "message", message.message))
             }
           }
         ),
-        
       ),
       input( `type` := "text", value := state.newMessage, id := "chatInput",
         onChange := (e => setState(state.copy(newMessage = e.target.value))),
-        onKeyDown := (e => handleSubmit(e.key))
+        onKeyDown := (e => sendMessage(e.key))
       )
     )
   }

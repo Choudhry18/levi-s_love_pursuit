@@ -4,7 +4,6 @@ import org.scalajs.dom
 import shared.SharedMessages
 import org.scalajs.dom
 import org.scalajs.dom.html
-import Authentication.Version6
 
 import slinky.web.ReactDOM
 import slinky.web.html._
@@ -22,8 +21,12 @@ object Main {
       )
     }
 
-    if(dom.document.getElementById("version6") != null){
-        Version6.init()
+    if(dom.document.getElementById("authentication-page") != null){
+      println("Rendering authentication page")
+      ReactDOM.render(
+        AuthenticationComponent(),
+        dom.document.getElementById("react-root")
+      )
     }
   }
 }
