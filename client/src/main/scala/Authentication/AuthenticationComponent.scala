@@ -63,7 +63,8 @@ import models.ReadsAndWrites._
       span("Username: "),
       input(`type`:="text", id:="createName", onChange := (e => setState(state.copy(createName = e.target.value)))),
       span("Password: "),
-      input(`type`:="text", id:="createPass", onChange := (e => setState(state.copy(createPass = e.target.value))))
+      input(`type`:="text", id:="createPass", onChange := (e => setState(state.copy(createPass = e.target.value)))),
+      button("Submit", onClick := (e => createUser())),
     )
   }                          
 }

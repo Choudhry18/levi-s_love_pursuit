@@ -7,26 +7,37 @@ import play.api.i18n._
 import models.AuthenModel
 import play.api.libs.json._
 import models._
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
+//database
+import slick.jdbc.PostgresProfile.api._
+import slick.jdbc.JdbcProfile
+import slick.jdbc.PostgresProfile.api._
+import play.api.db.slick.HasDatabaseConfigProvider
+import play.api.db.slick.DatabaseConfigProvider
+
 
 @Singleton
-class Authentication @Inject() (cc: ControllerComponents) extends AbstractController(cc) {
-    implicit val userDataReads = Json.reads[UserData]
-    def load = Action { implicit request =>
-        Ok(views.html.authentication())
-    }
+class Authentication @Inject() (protected val dbConfigProvider: DatabaseConfigProvider, cc: ControllerComponents)(implicit ec: ExecutionContext) 
+    extends AbstractController(cc) with HasDatabaseConfigProvider[JdbcProfile] {
+  private val dbModel = new AuthenModel(db)
+  implicit val userDataReads = Json.reads[UserData]
+  def load = Action { implicit request =>
+      Ok(views.html.authentication())
+  }
 
-  def withJsonBody[A](f: A => Result)(implicit request: Request[AnyContent], reads: Reads[A]) = {
+  def withJsonBody[A](f: A => Future[Result])(implicit request: Request[AnyContent], reads: Reads[A]) : Future[Result] = {
     request.body.asJson.map { body =>
       Json.fromJson[A](body) match {
         case JsSuccess(a, path) => f(a)
         case e @ JsError(_) => {
           println("ERROR OCCURED TRYING TO PARSE JSON")
-          Redirect(routes.Authentication.load)
+          Future.successful(Redirect(routes.Authentication.load))
         }
       }
     }.getOrElse{
       println("ERROR OCCURED TRYING TO PARSE JSON")
-      Redirect(routes.Authentication.load)
+      Future.successful(Redirect(routes.Authentication.load))
     }
   }
   
@@ -35,22 +46,26 @@ class Authentication @Inject() (cc: ControllerComponents) extends AbstractContro
   }
   
 
-  def validate() = Action{ implicit request =>
+  def validate() = Action.async { implicit request =>
     withJsonBody[UserData]{ud => 
-      if(AuthenModel.validateUser(ud.username, ud.password)){
-        Ok(Json.toJson(true)).withSession("username"-> ud.username, "csrfToken" -> play.filters.csrf.CSRF.getToken.get.value)
-      } else{
-        Ok(Json.toJson(false))
+      dbModel.validateUser(ud.username, ud.password).map { optionUserId =>
+        optionUserId match {
+          case Some(userid) => Ok(Json.toJson(true))
+            .withSession("username" -> ud.username, "userid" -> userid.toString, "csrfToken" -> play.filters.csrf.CSRF.getToken.get.value)
+          case None => Ok(Json.toJson(false))
+        }
       }
     }
   }
 
-  def createUser() = Action{ implicit request =>
+  def createUser() = Action.async { implicit request =>
     withJsonBody[UserData]{ud => 
-      if(AuthenModel.createUser(ud.username, ud.password)){
-        Ok(Json.toJson(true)).withSession("username"-> ud.username, "csrfToken" -> play.filters.csrf.CSRF.getToken.get.value)
-      } else{
-        Ok(Json.toJson(false))
+      dbModel.createUser(ud.username, ud.password, "arbemail@trinity.edu").map { optionUserId =>
+        optionUserId match {
+          case Some(userid) => Ok(Json.toJson(true))
+            .withSession("username" -> ud.username, "userid" -> userid.toString, "csrfToken" -> play.filters.csrf.CSRF.getToken.get.value)
+          case None => Ok(Json.toJson(false))
+        }
       }
     }
   }

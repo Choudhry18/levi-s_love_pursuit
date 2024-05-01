@@ -3,11 +3,11 @@ package models
 import collection.mutable
 
 object ChatModel {
-    private val chats = mutable.Map[String, Seq[String]]("Levi" -> Seq("Choudhry", "Kevin", "Harry", "Patrick"), "Kevin" -> Seq("Levi", "Choudhry"))
-    private val chatContents = mutable.Map[Set[String], Seq[UserMessage]]((Set("Levi", "Choudhry") -> Seq(UserMessage("Levi", "Hi Choudhry"), UserMessage("Choudhry", "Hi Levi"), UserMessage("Choudhry", "You are so smart"), UserMessage("Levi", "You are a literal goomba"))), 
-        (Set("Levi", "Kevin") -> Seq(UserMessage("Levi", "Hi Kevin"), UserMessage("Kevin", "Hi Levi"))),
-        (Set("Levi", "Harry") -> Seq(UserMessage("Levi", "Hi Harry"), UserMessage("Harry", "Hi Levi"))),
-        (Set("Levi", "Patrick") -> Seq(UserMessage("Levi", "Hi Patrick"), UserMessage("Patrick", "Hi Levi"))))
+    private val chats = mutable.Map[String, Seq[String]]("levi" -> Seq("Choudhry", "kevin", "Harry", "Patrick"), "kevin" -> Seq("levi", "Choudhry"))
+    private val chatContents = mutable.Map[Set[String], Seq[UserMessage]]((Set("levi", "Choudhry") -> Seq(UserMessage("levi", "Hi Choudhry"), UserMessage("Choudhry", "Hi levi"), UserMessage("Choudhry", "You are so smart"), UserMessage("levi", "You are a literal goomba"))), 
+        (Set("levi", "kevin") -> Seq(UserMessage("levi", "Hi kevin"), UserMessage("kevin", "Hi levi"))),
+        (Set("levi", "Harry") -> Seq(UserMessage("levi", "Hi Harry"), UserMessage("Harry", "Hi levi"))),
+        (Set("levi", "Patrick") -> Seq(UserMessage("levi", "Hi Patrick"), UserMessage("Patrick", "Hi levi"))))
 
     def getChats(username: String): Seq[String] = {
         chats.get(username).getOrElse(Nil)

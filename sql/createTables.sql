@@ -44,3 +44,5 @@ CREATE TABLE message (
     match_id INT REFERENCES match(match_id) ON DELETE CASCADE,
     sender_id INT REFERENCES users(user_id) ON DELETE CASCADE
 );
+
+INSERT INTO users (username, password, email) VALUES ('kevin', 'pass', 'kevin@trinity.edu');
