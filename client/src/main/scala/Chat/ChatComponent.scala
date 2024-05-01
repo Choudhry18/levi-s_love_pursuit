@@ -35,7 +35,7 @@ import models.UserMessage
     FetchJson.fetchPost(getChatContentRoute, csrfToken, data, 
       (chatContent : Seq[UserMessage]) => {
         //if illegal access or no session => redirect
-        if (chatContent.isEmpty) window.location.assign(loginRoute) else setState(state.copy(chat = chatContent))
+        if (!chatContent.isEmpty) setState(state.copy(chat = chatContent)) else setState(state.copy(chat = Nil))
       }
     )
   }
@@ -65,7 +65,7 @@ import models.UserMessage
       // println("Sending " + state.newMessage)
       val data = UserMessage(props.recipient, state.newMessage)
       FetchJson.fetchPost(sendMessageRoute, csrfToken, data, 
-        (bool : Boolean) => {if (bool) fetchChatContent() else window.location.assign(loginRoute)} 
+        (bool : Boolean) => {if (bool) fetchChatContent() else println("failed to send message")} 
       )
       setState(state.copy(newMessage = ""))
       //scroll down to newest message

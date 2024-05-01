@@ -19,9 +19,19 @@ class Authentication @Inject() (cc: ControllerComponents) extends AbstractContro
     request.body.asJson.map { body =>
       Json.fromJson[A](body) match {
         case JsSuccess(a, path) => f(a)
-        case e @ JsError(_) => Redirect(routes.Authentication.load)
+        case e @ JsError(_) => {
+          println("ERROR OCCURED TRYING TO PARSE JSON")
+          Redirect(routes.Authentication.load)
+        }
       }
-    }.getOrElse(Redirect(routes.Authentication.load))
+    }.getOrElse{
+      println("ERROR OCCURED TRYING TO PARSE JSON")
+      Redirect(routes.Authentication.load)
+    }
+  }
+  
+  def withSessionUsername(f: String => Result)(expireProcess: Result)(implicit request: Request[AnyContent]) = {
+    request.session.get("username").map(f).getOrElse(expireProcess)
   }
   
 

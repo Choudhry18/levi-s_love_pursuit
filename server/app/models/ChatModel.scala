@@ -3,7 +3,7 @@ package models
 import collection.mutable
 
 object ChatModel {
-    private val chats = mutable.Map[String, Seq[String]]("Levi" -> Seq("Choudhry", "Kevin", "Harry", "Patrick"))
+    private val chats = mutable.Map[String, Seq[String]]("Levi" -> Seq("Choudhry", "Kevin", "Harry", "Patrick"), "Kevin" -> Seq("Levi", "Choudhry"))
     private val chatContents = mutable.Map[Set[String], Seq[UserMessage]]((Set("Levi", "Choudhry") -> Seq(UserMessage("Levi", "Hi Choudhry"), UserMessage("Choudhry", "Hi Levi"), UserMessage("Choudhry", "You are so smart"), UserMessage("Levi", "You are a literal goomba"))), 
         (Set("Levi", "Kevin") -> Seq(UserMessage("Levi", "Hi Kevin"), UserMessage("Kevin", "Hi Levi"))),
         (Set("Levi", "Harry") -> Seq(UserMessage("Levi", "Hi Harry"), UserMessage("Harry", "Hi Levi"))),
@@ -14,6 +14,7 @@ object ChatModel {
     }
 
     def getChatContent(user1: String, user2: String) : Seq[UserMessage] = {
+        println(chatContents.get(Set(user1, user2)))
         //method actually works regardless of order of user
         chatContents.get(Set(user1, user2)).getOrElse(Nil)
     }
