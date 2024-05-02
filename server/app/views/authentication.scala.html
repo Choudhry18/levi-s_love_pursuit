@@ -3,6 +3,7 @@
 @main("Authentication"){
     <div id="react-root"></div>
     <input type="hidden" id="authentication-page" value="">
+    <link rel="stylesheet" href="@routes.Assets.versioned("/stylesheets/authentication.css")">
     <input type="hidden" id="csrfToken" value="@helper.CSRF.getToken.value">
     <input type="hidden" id="validateRoute" value="@routes.Authentication.validate">
     <input type="hidden" id="createRoute" value="@routes.Authentication.createUser">

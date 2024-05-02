@@ -1,0 +1,54 @@
+/* General body styling */
+body {
+    font-family: 'Open Sans';
+    background-color: #FFF7FF;
+    margin: 0;
+    padding: 0;
+}
+  
+/* Centering the main content */
+#react-root {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Styling the login and creation sections */
+#login-section {
+    background: #FFF7FF;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    width: 300px;
+}
+
+h1 {
+    color: #FFF7FF;
+}
+
+/* Styling form inputs */
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    box-sizing: border-box;
+    border: 1px solid #FFF7FF;
+    border-radius: 4px;
+}
+
+/* Styling buttons */
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #410E3B;
+    color: #FFF7FF;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #410E3B;
+}
