@@ -44,11 +44,11 @@ class Authentication @Inject() (protected val dbConfigProvider: DatabaseConfigPr
 
   def validate() = Action.async { implicit request =>
     withJsonBody[UserData]{ud => 
-      dbModel.validateUser(ud.username, ud.password).map { optionUserId =>
-        optionUserId match {
-          case Some(userid) => Ok(Json.toJson(true))
-            .withSession("username" -> ud.username, "userId" -> userid.toString, "csrfToken" -> play.filters.csrf.CSRF.getToken.get.value)
-          case None => Ok(Json.toJson(false))
+      dbModel.validateUser(ud.username, ud.password).map { success =>
+        if (success) {
+          Ok(Json.toJson(true)).withSession("username" -> ud.username, "csrfToken" -> play.filters.csrf.CSRF.getToken.get.value)
+        } else {
+          Ok(Json.toJson(false))
         }
       }
     }
@@ -56,11 +56,11 @@ class Authentication @Inject() (protected val dbConfigProvider: DatabaseConfigPr
 
   def createUser() = Action.async { implicit request =>
     withJsonBody[UserData]{ud => 
-      dbModel.createUser(ud.username, ud.password, "arbemail@trinity.edu").map { optionUserId =>
-        optionUserId match {
-          case Some(userid) => Ok(Json.toJson(true))
-            .withSession("username" -> ud.username, "userId" -> userid.toString, "csrfToken" -> play.filters.csrf.CSRF.getToken.get.value)
-          case None => Ok(Json.toJson(false))
+      dbModel.createUser(ud.username, ud.password, "arbemail@trinity.edu").map { success =>
+        if (success) {
+          Ok(Json.toJson(true)).withSession("username" -> ud.username, "csrfToken" -> play.filters.csrf.CSRF.getToken.get.value)
+        } else {
+          Ok(Json.toJson(false))
         }
       }
     }

@@ -39,26 +39,24 @@ class ChatController @Inject() (protected val dbConfigProvider: DatabaseConfigPr
   }
   
   def withSessionUsername(f: String => Future[Result])(expireProcess: Result)(implicit request: Request[AnyContent]) = {
-    request.session.get("userId").map(f).getOrElse(Future.successful(expireProcess))
+    request.session.get("username").map(f).getOrElse(Future.successful(expireProcess))
   }
   
   def load = Action { implicit request =>
     Ok(views.html.chat())
   }
 
-  //TODO: make sure user have session and get their username from session
   def chats = Action.async { implicit request =>
-    withSessionUsername{ userIdStr => 
-      val userId = userIdStr.toInt
-      dbModel.getChats(userId).map(userChats => Ok(Json.toJson(UserChats(userChats))))
+    withSessionUsername{ username => 
+      dbModel.getChats(username).map(userChats => Ok(Json.toJson(UserChats(userChats))))
     }(Ok(Json.toJson(UserChats(Nil, expired = true))))
   }
 
+  //TODO: session expire handle
   def getChatContent = Action.async { implicit request =>
     withSessionUsername{ username =>
       withJsonBody[String]{ recipient =>
-        val chatContent : Seq[UserMessage] = dbModel.getChatContent(username, recipient) 
-        Future.successful(Ok(Json.toJson(chatContent)))
+        dbModel.getChatContent(username, recipient).map(chatContent => Ok(Json.toJson(chatContent)))
       }
     }(Ok(Json.toJson(Seq.empty[String])))
   }

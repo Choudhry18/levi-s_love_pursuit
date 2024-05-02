@@ -6,31 +6,27 @@ import models.Tables._
 import scala.concurrent.Future 
 
 class AuthenModel(db: Database)(implicit ec: ExecutionContext) {
-    // private val users = mutable.Map[String, String]("kevin" -> "pass", "levi" -> "pass")
-
-    //the int is the associated user ID
-    def validateUser(username: String, password: String): Future[Option[Int]] = {
+    def validateUser(username: String, password: String): Future[Boolean] = {
       //TODO: encrypt password
       val matches = db.run(Users.filter(userRow => userRow.username === username && userRow.password === password).result)
       matches.map(userRows => 
-        if (userRows.isEmpty) None else {
-          userRows.headOption.flatMap {userRow => Some(userRow.userId)
-        }
+        if (userRows.isEmpty) false else {
+          userRows.headOption.map(_ => true).getOrElse(false)
       })
     }
 
-    def createUser(username: String, password: String, email: String): Future[Option[Int]] = {
+    def createUser(username: String, password: String, email: String): Future[Boolean] = {
       val matches = db.run(Users.filter(userRow => userRow.username === username).result)
       matches.flatMap { userRows =>
         if (userRows.isEmpty) {
-          db.run(Users += UsersRow(-1, username, password, email))
+          db.run(Users += UsersRow(username, password, email))
             //add count is probably just to check if adding succeeded
             .flatMap { addCount => 
               if (addCount > 0) db.run(Users.filter(userRow => userRow.username === username).result)
-                .map(_.headOption.map(_.userId))
-              else Future.successful(None)
+                .map(_.headOption.map(_ => true).getOrElse(false))
+              else Future.successful(false)
             }
-        } else Future.successful(None)
+        } else Future.successful(false)
       }
     }
 }

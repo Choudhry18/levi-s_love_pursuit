@@ -7,15 +7,15 @@ DROP TABLE preference;
 /* FOR RESET ONLY */
 
 CREATE TABLE users (
-    user_id SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
+    -- user_id SERIAL PRIMARY KEY,
+    username VARCHAR(50) PRIMARY KEY,
     password VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL
 );
 
 CREATE TABLE profile (
     profile_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    username VARCHAR(50) NOT NULL REFERENCES users(username) ON DELETE CASCADE,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     birthdate DATE,
@@ -31,7 +31,7 @@ CREATE TABLE profile (
 
 CREATE TABLE preference (
     preference_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    username VARCHAR(50) NOT NULL REFERENCES users(username) ON DELETE CASCADE,
     gender VARCHAR(20),
     year VARCHAR(20),
     greek_preference VARCHAR(200),
@@ -42,30 +42,34 @@ CREATE TABLE preference (
 
 CREATE TABLE match (
     match_id SERIAL PRIMARY KEY,
-    user_id1 INT REFERENCES users(user_id) ON DELETE CASCADE,
-    user_id2 INT REFERENCES users(user_id) ON DELETE CASCADE,
-    match_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    username1 VARCHAR(50) NOT NULL REFERENCES users(username) ON DELETE CASCADE,
+    username2 VARCHAR(50) NOT NULL REFERENCES users(username) ON DELETE CASCADE
 );
 
 CREATE TABLE message (
     message_id SERIAL PRIMARY KEY,
-    match_id INT REFERENCES match(match_id) ON DELETE CASCADE,
-    sender_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    match_id INT NOT NULL REFERENCES match(match_id) ON DELETE CASCADE,
+    sender_username VARCHAR(50) NOT NULL REFERENCES users(username) ON DELETE CASCADE,
     message_text VARCHAR(1000) NOT NULL,
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 INSERT INTO users (username, password, email) VALUES ('kevin', 'pass', 'kevin@trinity.edu');
 INSERT INTO users (username, password, email) VALUES ('levi', 'pass', 'levi@trinity.edu');
 
-/* declaring Levi's and Kevin's user id into a variable */
+/* creating matches and send messages*/
 DO $$
 DECLARE
-    levi_user_id INT;
-    kevin_user_id INT;
+    levi_kevin_match_id INT;
 BEGIN
-    SELECT user_id INTO levi_user_id FROM users WHERE username = 'levi';
-    SELECT user_id INTO kevin_user_id FROM users WHERE username = 'kevin';
-    INSERT INTO match (user_id1, user_id2) VALUES (levi_user_id, kevin_user_id);
+  /* creating match */
+  INSERT INTO match (username1, username2) VALUES ('levi', 'kevin');
+  /* messages */
+  SELECT match_id INTO levi_kevin_match_id FROM match WHERE username1 = 'levi' AND username2 = 'kevin';
+  INSERT INTO message (match_id, sender_username, message_text) VALUES (levi_kevin_match_id, 'levi', 'Hi Kevin');
+  INSERT INTO message (match_id, sender_username, message_text) VALUES (levi_kevin_match_id, 'kevin', 'Hi Levi');
+  INSERT INTO message (match_id, sender_username, message_text) VALUES (levi_kevin_match_id, 'levi', 'Hi again Kevin');
 END $$;
+
 
 
