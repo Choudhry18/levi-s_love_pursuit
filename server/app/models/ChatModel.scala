@@ -1,30 +1,50 @@
 package models
 
 import collection.mutable
+import slick.jdbc.PostgresProfile.api._
+import scala.concurrent.ExecutionContext
+import models.Tables._
+import scala.concurrent.Future 
+import java.sql.Timestamp
+import java.util.Date
 
-object ChatModel {
-    private val chats = mutable.Map[String, Seq[String]]("Levi" -> Seq("Choudhry", "Kevin", "Harry", "Patrick"), "Kevin" -> Seq("Levi", "Choudhry"))
-    private val chatContents = mutable.Map[Set[String], Seq[UserMessage]]((Set("Levi", "Choudhry") -> Seq(UserMessage("Levi", "Hi Choudhry"), UserMessage("Choudhry", "Hi Levi"), UserMessage("Choudhry", "You are so smart"), UserMessage("Levi", "You are a literal goomba"))), 
-        (Set("Levi", "Kevin") -> Seq(UserMessage("Levi", "Hi Kevin"), UserMessage("Kevin", "Hi Levi"))),
-        (Set("Levi", "Harry") -> Seq(UserMessage("Levi", "Hi Harry"), UserMessage("Harry", "Hi Levi"))),
-        (Set("Levi", "Patrick") -> Seq(UserMessage("Levi", "Hi Patrick"), UserMessage("Patrick", "Hi Levi"))))
-
-    def getChats(username: String): Seq[String] = {
-        chats.get(username).getOrElse(Nil)
+class ChatModel(db: Database)(implicit ec: ExecutionContext) {
+    //return a seq of username that a user is chatting with
+    def getChats(username : String): Future[Seq[String]] = {
+      val matchMatches : Future[Seq[MatchRow]] = db.run(Match.filter(matchRow => matchRow.username1 === username || matchRow.username2 === username).result)
+      matchMatches.flatMap(matchRows => 
+        //turn a sequence of futures into a future sequence
+        Future.sequence(
+          matchRows.map(matchRow => {
+            val otherUsername = if (matchRow.username1 != username) matchRow.username1 else matchRow.username2
+            db.run(Users.filter(userRow => userRow.username === otherUsername).result).map(_.headOption.map(_.username).getOrElse(""))
+          })
+        )
+      )
     }
 
-    def getChatContent(user1: String, user2: String) : Seq[UserMessage] = {
-        println(chatContents.get(Set(user1, user2)))
-        //method actually works regardless of order of user
-        chatContents.get(Set(user1, user2)).getOrElse(Nil)
+    def getChatContent(user1: String, user2: String) : Future[Seq[UserMessage]] = {
+      //find the match
+      val matchMatches : Future[Seq[MatchRow]] = db.run(Match.filter
+        (matchRow => (matchRow.username1 === user1 || matchRow.username1 === user2) 
+        && (matchRow.username2 === user1 || matchRow.username2 === user2)).result)
+      matchMatches.flatMap(matchRows => 
+        matchRows.headOption.map(matchRow => {
+          val messageMatches : Future[Seq[MessageRow]] = 
+            db.run(Message.filter(messageRow => messageRow.matchId === matchRow.matchId).sortBy(messageRow => messageRow.timestamp).result)
+          messageMatches.map(messageRows => messageRows.map(messageRow => UserMessage(messageRow.senderUsername, messageRow.messageText)))
+        }).getOrElse(Future.successful(Nil))
+      )
     }
 
     def addMessage(sender: String, recipient: String, message: String) : Unit = {
-        val userPair = Set(sender, recipient)
-        //if there is existing chat already, add that on to the list, else create a new mapping
-        chatContents.get(userPair) match {
-            case Some(chatContent) => chatContents.put(userPair, chatContent :+ UserMessage(sender, message))
-            case None => chatContents.put(userPair, Seq(UserMessage(sender, message)))
-        }
+      val matchMatches : Future[Seq[MatchRow]] = db.run(Match.filter
+        (matchRow => (matchRow.username1 === sender || matchRow.username1 === recipient) 
+        && (matchRow.username2 === sender || matchRow.username2 === recipient)).result)
+      matchMatches.flatMap(matchRows => 
+        matchRows.headOption.map(matchRow => {
+          db.run(Message += MessageRow(-1, matchRow.matchId, sender, message, new Timestamp(new Date().getTime)))
+        }).getOrElse(Future.successful(false))
+      )
     }
 }

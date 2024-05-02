@@ -36,3 +36,7 @@ shared/.jvm
 .cache
 .target
 bin/
+
+#database set up
+application.conf
+CodeGen.scala
