@@ -8,26 +8,38 @@ import play.api.libs.json._
 import models.UserMessage
 import models.ReadsAndWrites._
 
+//database
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
+import slick.jdbc.PostgresProfile.api._
+import slick.jdbc.JdbcProfile
+import slick.jdbc.PostgresProfile.api._
+import play.api.db.slick.HasDatabaseConfigProvider
+import play.api.db.slick.DatabaseConfigProvider
+import models.UserChats
+
 
 @Singleton
-class ChatController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
-  def withJsonBody[A](f: A => Result)(implicit request: Request[AnyContent], reads: Reads[A]) = {
+class ChatController @Inject() (protected val dbConfigProvider: DatabaseConfigProvider, cc: ControllerComponents)(implicit ec: ExecutionContext) 
+    extends AbstractController(cc) with HasDatabaseConfigProvider[JdbcProfile] {
+  private val dbModel = new models.ChatModel(db) 
+  def withJsonBody[A](f: A => Future[Result])(implicit request: Request[AnyContent], reads: Reads[A]) : Future[Result] = {
     request.body.asJson.map { body =>
       Json.fromJson[A](body) match {
         case JsSuccess(a, path) => f(a)
         case e @ JsError(_) => {
           println("ERROR OCCURED TRYING TO PARSE JSON")
-          Redirect(routes.Authentication.load)
+          Future.successful(Redirect(routes.ChatController.load))
         }
       }
     }.getOrElse{
       println("ERROR OCCURED TRYING TO PARSE JSON")
-      Redirect(routes.Authentication.load)
+      Future.successful(Redirect(routes.ChatController.load))
     }
   }
   
-  def withSessionUsername(f: String => Result)(expireProcess: Result)(implicit request: Request[AnyContent]) = {
-    request.session.get("username").map(f).getOrElse(expireProcess)
+  def withSessionUsername(f: String => Future[Result])(expireProcess: Result)(implicit request: Request[AnyContent]) = {
+    request.session.get("userId").map(f).getOrElse(Future.successful(expireProcess))
   }
   
   def load = Action { implicit request =>
@@ -35,27 +47,27 @@ class ChatController @Inject()(cc: ControllerComponents) extends AbstractControl
   }
 
   //TODO: make sure user have session and get their username from session
-  def chats = Action { implicit request =>
-    withSessionUsername{ username => 
-      val userChats : Seq[String] = models.ChatModel.getChats(username)
-      Ok(Json.toJson(userChats))
-    }(Ok(Json.toJson(Seq.empty[String])))
+  def chats = Action.async { implicit request =>
+    withSessionUsername{ userIdStr => 
+      val userId = userIdStr.toInt
+      dbModel.getChats(userId).map(userChats => Ok(Json.toJson(UserChats(userChats))))
+    }(Ok(Json.toJson(UserChats(Nil, expired = true))))
   }
 
-  def getChatContent = Action { implicit request =>
+  def getChatContent = Action.async { implicit request =>
     withSessionUsername{ username =>
       withJsonBody[String]{ recipient =>
-        val chatContent : Seq[UserMessage] = models.ChatModel.getChatContent(username, recipient) 
-        Ok(Json.toJson(chatContent))
+        val chatContent : Seq[UserMessage] = dbModel.getChatContent(username, recipient) 
+        Future.successful(Ok(Json.toJson(chatContent)))
       }
     }(Ok(Json.toJson(Seq.empty[String])))
   }
 
-  def sendMessage = Action { implicit request =>
+  def sendMessage = Action.async { implicit request =>
     withSessionUsername{ sender => 
       withJsonBody[UserMessage] { um =>
-        models.ChatModel.addMessage(sender, um.username, um.message) 
-        Ok(Json.toJson(true))
+        dbModel.addMessage(sender, um.username, um.message) 
+        Future.successful(Ok(Json.toJson(true)))
       }
     }(Ok(Json.toJson(false)))
   }

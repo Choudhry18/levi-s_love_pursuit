@@ -1,20 +1,34 @@
 package models
 
 import collection.mutable
+import slick.jdbc.PostgresProfile.api._
+import scala.concurrent.ExecutionContext
+import models.Tables._
+import scala.concurrent.Future 
 
-object ChatModel {
-    private val chats = mutable.Map[String, Seq[String]]("levi" -> Seq("Choudhry", "kevin", "Harry", "Patrick"), "kevin" -> Seq("levi", "Choudhry"))
+class ChatModel(db: Database)(implicit ec: ExecutionContext) {
     private val chatContents = mutable.Map[Set[String], Seq[UserMessage]]((Set("levi", "Choudhry") -> Seq(UserMessage("levi", "Hi Choudhry"), UserMessage("Choudhry", "Hi levi"), UserMessage("Choudhry", "You are so smart"), UserMessage("levi", "You are a literal goomba"))), 
-        (Set("levi", "kevin") -> Seq(UserMessage("levi", "Hi kevin"), UserMessage("kevin", "Hi levi"))),
-        (Set("levi", "Harry") -> Seq(UserMessage("levi", "Hi Harry"), UserMessage("Harry", "Hi levi"))),
-        (Set("levi", "Patrick") -> Seq(UserMessage("levi", "Hi Patrick"), UserMessage("Patrick", "Hi levi"))))
+      (Set("levi", "kevin") -> Seq(UserMessage("levi", "Hi kevin"), UserMessage("kevin", "Hi levi"))),
+      (Set("levi", "Harry") -> Seq(UserMessage("levi", "Hi Harry"), UserMessage("Harry", "Hi levi"))),
+      (Set("levi", "Patrick") -> Seq(UserMessage("levi", "Hi Patrick"), UserMessage("Patrick", "Hi levi"))))
 
-    def getChats(username: String): Seq[String] = {
-        chats.get(username).getOrElse(Nil)
+    //return a seq of username that a user is chatting with
+    def getChats(userId: Int): Future[Seq[String]] = {
+      val dbMatches : Future[Seq[MatchRow]] = db.run(Match.filter(matchRow => matchRow.userId1 === userId || matchRow.userId2 === userId).result)
+      dbMatches.flatMap(matchRows => 
+        //turn a sequence of futures into a future sequence
+        Future.sequence(
+          // Seq(Future.successful(""))
+          matchRows.map(matchRow => {
+              val otherUserId = if (matchRow.userId1.getOrElse(0) != userId) matchRow.userId1 else matchRow.userId2
+              db.run(Users.filter(userRow => userRow.userId === otherUserId).result).map(_.headOption.map(_.username).getOrElse(""))
+            }
+          )
+        )
+      )
     }
 
     def getChatContent(user1: String, user2: String) : Seq[UserMessage] = {
-        println(chatContents.get(Set(user1, user2)))
         //method actually works regardless of order of user
         chatContents.get(Set(user1, user2)).getOrElse(Nil)
     }

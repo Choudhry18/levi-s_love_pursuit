@@ -7,9 +7,11 @@ import play.api.i18n._
 import models.AuthenModel
 import play.api.libs.json._
 import models._
+import models.ReadsAndWrites._
+
+//database
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
-//database
 import slick.jdbc.PostgresProfile.api._
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
@@ -21,7 +23,6 @@ import play.api.db.slick.DatabaseConfigProvider
 class Authentication @Inject() (protected val dbConfigProvider: DatabaseConfigProvider, cc: ControllerComponents)(implicit ec: ExecutionContext) 
     extends AbstractController(cc) with HasDatabaseConfigProvider[JdbcProfile] {
   private val dbModel = new AuthenModel(db)
-  implicit val userDataReads = Json.reads[UserData]
   def load = Action { implicit request =>
       Ok(views.html.authentication())
   }
@@ -40,18 +41,13 @@ class Authentication @Inject() (protected val dbConfigProvider: DatabaseConfigPr
       Future.successful(Redirect(routes.Authentication.load))
     }
   }
-  
-  def withSessionUsername(f: String => Result)(expireProcess: Result)(implicit request: Request[AnyContent]) = {
-    request.session.get("username").map(f).getOrElse(expireProcess)
-  }
-  
 
   def validate() = Action.async { implicit request =>
     withJsonBody[UserData]{ud => 
       dbModel.validateUser(ud.username, ud.password).map { optionUserId =>
         optionUserId match {
           case Some(userid) => Ok(Json.toJson(true))
-            .withSession("username" -> ud.username, "userid" -> userid.toString, "csrfToken" -> play.filters.csrf.CSRF.getToken.get.value)
+            .withSession("username" -> ud.username, "userId" -> userid.toString, "csrfToken" -> play.filters.csrf.CSRF.getToken.get.value)
           case None => Ok(Json.toJson(false))
         }
       }
@@ -63,7 +59,7 @@ class Authentication @Inject() (protected val dbConfigProvider: DatabaseConfigPr
       dbModel.createUser(ud.username, ud.password, "arbemail@trinity.edu").map { optionUserId =>
         optionUserId match {
           case Some(userid) => Ok(Json.toJson(true))
-            .withSession("username" -> ud.username, "userid" -> userid.toString, "csrfToken" -> play.filters.csrf.CSRF.getToken.get.value)
+            .withSession("username" -> ud.username, "userId" -> userid.toString, "csrfToken" -> play.filters.csrf.CSRF.getToken.get.value)
           case None => Ok(Json.toJson(false))
         }
       }

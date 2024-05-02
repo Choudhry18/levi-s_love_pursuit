@@ -7,7 +7,11 @@ import slinky.web.html.div
 
 import org.scalajs.dom.document
 import org.scalajs.dom.html
+import org.scalajs.dom.window
 import slinky.web.html._
+import models.UserChats
+import models.ReadsAndWrites._
+
 
 
 @react class ChatPageComponent extends Component {
@@ -19,11 +23,17 @@ import slinky.web.html._
 
   val chatsRoute = document.getElementById("chatsRoute").asInstanceOf[html.Input].value
   val chatBarImgRoute = document.getElementById("chatBarImgRoute").asInstanceOf[org.scalajs.dom.html.Input].value
+  val loginRoute = document.getElementById("loginRoute").asInstanceOf[org.scalajs.dom.html.Input].value
+
 
   override def componentDidMount(): Unit = {
     FetchJson.fetchGet(chatsRoute, 
-    (jsonChats : Seq[String]) => 
-      {setState(state.copy(chats = jsonChats, chatContentRecipient = jsonChats(0)))})
+    (jsonChats : UserChats) => 
+      if (jsonChats.expired){
+        //reroutes back to home page if session has expired
+        window.location.assign(loginRoute)
+      } else {setState(state.copy(chats = jsonChats.chats, chatContentRecipient = jsonChats.chats(0)))})
+      
   }
   
   //TODO: display something if your chat is empty

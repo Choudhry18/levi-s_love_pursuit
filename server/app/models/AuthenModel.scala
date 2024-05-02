@@ -1,6 +1,5 @@
 package models
 
-import collection.mutable
 import slick.jdbc.PostgresProfile.api._
 import scala.concurrent.ExecutionContext
 import models.Tables._
