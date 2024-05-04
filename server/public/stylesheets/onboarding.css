@@ -1,0 +1,53 @@
+/* General body styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+/* Onboarding section styling */
+#onboarding-section {
+    background-color: white;
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Onboarding form header */
+#onboarding-section h1 {
+    color: #5c67f2;
+}
+
+/* Form element styling */
+input[type="text"],
+input[type="password"],
+button {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Button specific styling */
+button {
+    background-color: #5c67f2;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #4a54e1;
+}
+
+/* Small screen / responsive adjustments */
+@media (max-width: 768px) {
+    #onboarding-section {
+        margin: 20px;
+    }
+}

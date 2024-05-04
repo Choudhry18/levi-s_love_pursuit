@@ -29,4 +29,13 @@ object Main {
       )
     }
   }
+
+  if (dom.document.getElementById("onboarding-page") != null) {
+    println("Rendering onboarding page")
+    ReactDOM.render(
+      OnboardingComponent(),
+      dom.document.getElementById("react-root")
+    )
+  }
+
 }

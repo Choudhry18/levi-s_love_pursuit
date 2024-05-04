@@ -1,0 +1,9 @@
+@()(implicit request: RequestHeader, flash: Flash)
+
+@main("Onboarding") {
+    <div id="react-root"></div>
+    <input type="hidden" id="onboarding-page" value="">
+    <link rel="stylesheet" href="@routes.Assets.versioned("/stylesheets/onboarding.css")">
+    <input type="hidden" id="csrfToken" value="@helper.CSRF.getToken.value">
+    <input type="hidden" id="preferenceRoute" value="@routes.PreferenceController.createPreference">
+}
