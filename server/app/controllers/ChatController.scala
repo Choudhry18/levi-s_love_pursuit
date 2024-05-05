@@ -29,12 +29,12 @@ class ChatController @Inject() (protected val dbConfigProvider: DatabaseConfigPr
         case JsSuccess(a, path) => f(a)
         case e @ JsError(_) => {
           println("ERROR OCCURED TRYING TO PARSE JSON")
-          Future.successful(Redirect(routes.ChatController.load))
+          Future.successful(Redirect(routes.HomeController.load))
         }
       }
     }.getOrElse{
       println("ERROR OCCURED TRYING TO PARSE JSON")
-      Future.successful(Redirect(routes.ChatController.load))
+      Future.successful(Redirect(routes.HomeController.load))
     }
   }
   
@@ -42,9 +42,9 @@ class ChatController @Inject() (protected val dbConfigProvider: DatabaseConfigPr
     request.session.get("username").map(f).getOrElse(Future.successful(expireProcess))
   }
   
-  def load = Action { implicit request =>
-    Ok(views.html.chat())
-  }
+  // def load = Action { implicit request =>
+  //   Ok(views.html.chat())
+  // }
 
   def chats = Action.async { implicit request =>
     withSessionUsername{ username => 

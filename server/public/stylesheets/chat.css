@@ -1,15 +1,10 @@
-body {
-    margin: 0%;
-    font-family: 'Open Sans';
-    overflow: hidden;
-}
-
 #chatPage {
     display: grid;
     grid-template-rows: 1.3fr 4.7fr;
     grid-template-columns: 8fr 12fr;
     justify-items: center;
     width: 100%;
+    /* height: 100%; */
     height: 100vh;
     color: #410E3B;
 }
