@@ -2,13 +2,15 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-
+# Home
+GET         /home                       controllers.HomeController.load
 # Chat page
-GET        /chat                        controllers.ChatController.load
+# GET        /chat                        controllers.ChatController.load
 GET        /getChats                    controllers.ChatController.chats
 POST       /getChatContent              controllers.ChatController.getChatContent
 POST       /sendMessage                 controllers.ChatController.sendMessage
 
+# Login
 GET        /                            controllers.Authentication.load
 GET        /authentication              controllers.Authentication.load
 POST       /validate                    controllers.Authentication.validate
