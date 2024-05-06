@@ -21,7 +21,6 @@ import play.api.db.slick.DatabaseConfigProvider
 @Singleton
 class OnboardingController @Inject() (protected val dbConfigProvider: DatabaseConfigProvider, cc: ControllerComponents)(implicit ec: ExecutionContext) 
     extends AbstractController(cc) with HasDatabaseConfigProvider[JdbcProfile] {
-  private val dbModel = new AuthenModel(db)
 
   def load = Action { implicit request =>
       Ok(views.html.onboarding())
@@ -46,13 +45,13 @@ class OnboardingController @Inject() (protected val dbConfigProvider: DatabaseCo
     request.session.get("username").map(f).getOrElse(Future.successful(expireProcess))
   }
   
-  private val preferenceModel = new PreferenceModel(db)
+  private val dbModel = new OnboardingModel(db)
 
   def createPreference = Action.async { implicit request =>
     withSessionUsername{ username =>
       withJsonBody[PreferenceData] 
       { pd =>
-          preferenceModel.createPreference(pd, username).map { success =>
+          dbModel.createPreference(pd, username).map { success =>
             if (success) {
                 Ok(Json.toJson(true))
             } else {
@@ -66,16 +65,14 @@ class OnboardingController @Inject() (protected val dbConfigProvider: DatabaseCo
   def createProfile = Action.async {implicit request =>
     withSessionUsername{ username =>
       withJsonBody[ProfileData] 
-      { pd =>
-        Future.successful(Ok(Json.toJson(true)))
-        // Future.successful(OK(Json.toJson(true)))
-          // preferenceModel.createPreference(pd, username).map { success =>
-          //   if (success) {
-          //       Ok(Json.toJson(true))
-          //   } else {
-          //       Ok(Json.toJson(false))
-          //   }
-          // }
+      { pd => 
+        dbModel.createProfile(pd, username).map { success =>
+          if (success) {
+              Ok(Json.toJson(true))
+          } else {
+              Ok(Json.toJson(false))
+          }
+        }
       }
     }(Ok(Json.toJson(false)))
   }

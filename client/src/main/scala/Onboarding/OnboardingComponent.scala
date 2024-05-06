@@ -46,23 +46,22 @@ import scala.annotation.switch
   implicit val ec = scala.concurrent.ExecutionContext.global
 
   def submitProfile() : Unit = {
-    // if (state.firstName.isEmpty() || state.lastName.isEmpty()|| state.bio.isEmpty() || state.photo.isEmpty()  || state.gender.isEmpty()
-    // || state.year.isEmpty() || state.greek_association.isEmpty()  || state.religion.isEmpty()  || state.commitment.isEmpty() || state.major.isEmpty()) {
-    //   window.alert("fill out all fields before submitting")
-    // } else {
+    if (state.firstName.isEmpty() || state.lastName.isEmpty()) {
+      window.alert("fill out first and last name before submitting")
+    } else {
       val data = models.ProfileData( state.firstName, state.lastName, state.bio, state.photo, state.gender, 
       state.year, state.greek_association, state.religion, state.commitment, state.major)
 
-      // FetchJson.fetchPost(profileRoute, csrfToken, data, (bool: Boolean) => {
-      //   if (bool) {
-      //       println("Profile saved")
-              props.switchOnboarding()
-      //   } else {
-      //       window.alert("Failed to save preferences")
-      //   }
-      // })
+      FetchJson.fetchPost(profileRoute, csrfToken, data, (bool: Boolean) => {
+        if (bool) {
+          println("Profile saved")
+          props.switchOnboarding()
+        } else {
+            window.alert("Failed to save preferences")
+        }
+      })
       
-    // }
+    }
   }
 
   def render(): ReactElement = {
