@@ -11,11 +11,12 @@ import org.scalajs.dom.window
 import slinky.web.html._
 import models.UserChats
 import models.ReadsAndWrites._
+import org.scalajs.dom.WebSocket
 
 
 
 @react class ChatPageComponent extends Component {
-  type Props = Unit
+  case class Props(socket: WebSocket)
   case class State(chats: Seq[String], chatContentRecipient: String)
   def initialState: State = State(Nil, "")
 
@@ -24,7 +25,7 @@ import models.ReadsAndWrites._
   val chatsRoute = document.getElementById("chatsRoute").asInstanceOf[html.Input].value
   val chatBarImgRoute = document.getElementById("chatBarImgRoute").asInstanceOf[org.scalajs.dom.html.Input].value
   val loginRoute = document.getElementById("loginRoute").asInstanceOf[org.scalajs.dom.html.Input].value
-
+  val socketRoute = document.getElementById("ws-route").asInstanceOf[html.Input].value
 
   override def componentDidMount(): Unit = {
     FetchJson.fetchGet(chatsRoute, 
@@ -49,7 +50,7 @@ import models.ReadsAndWrites._
           )
         }
       ),
-      ChatComponent(state.chatContentRecipient)
+      ChatComponent(state.chatContentRecipient, props.socket)
     )
   }
 

@@ -17,7 +17,7 @@ import models.ReadsAndWrites._
 import models.UserMessage
 
 @react class ChatComponent extends Component {
-  case class Props(recipient: String)
+  case class Props(recipient: String, socket: WebSocket)
   case class State(chat: Seq[UserMessage], newMessage : String)
   def initialState: State = State(Nil, "")
 
@@ -28,19 +28,23 @@ import models.UserMessage
   val sendMessageRoute = document.getElementById("sendMessageRoute").asInstanceOf[org.scalajs.dom.html.Input].value
   val loginRoute = document.getElementById("loginRoute").asInstanceOf[org.scalajs.dom.html.Input].value
 
-
   //getting chat content by fetch post the recipient name
   def fetchChatContent(): Unit = {
     val data = props.recipient
     FetchJson.fetchPost(getChatContentRoute, csrfToken, data, 
       (chatContent : Seq[UserMessage]) => {
-        //if illegal access or no session => redirect
-        if (!chatContent.isEmpty) setState(state.copy(chat = chatContent)) else setState(state.copy(chat = Nil))
+        println(chatContent)
+        setState(state.copy(chat = chatContent))
+        // setState(state.copy(chat = Nil)
       }
     )
   }
 
   override def componentDidMount(): Unit = {
+    props.socket.onmessage = {e => {
+      println("got a text")
+      fetchChatContent()
+    }}
     fetchChatContent()
     //scroll down to newest message
     val chatContentScrollSection = document.getElementById("chatContent").asInstanceOf[org.scalajs.dom.html.Input]
@@ -65,12 +69,18 @@ import models.UserMessage
       // println("Sending " + state.newMessage)
       val data = UserMessage(props.recipient, state.newMessage)
       FetchJson.fetchPost(sendMessageRoute, csrfToken, data, 
-        (bool : Boolean) => {if (bool) fetchChatContent() else println("failed to send message")} 
+        (bool : Boolean) => {if (bool) {
+          //sending the recipient's socket a message to update their chat
+          props.socket.send(props.recipient)
+          fetchChatContent()
+          val chatContentScrollSection = document.getElementById("chatContent").asInstanceOf[org.scalajs.dom.html.Input]
+          chatContentScrollSection.scrollTop = chatContentScrollSection.scrollHeight
+
+        } else println("failed to send message")} 
       )
       setState(state.copy(newMessage = ""))
       //scroll down to newest message
-      val chatContentScrollSection = document.getElementById("chatContent").asInstanceOf[org.scalajs.dom.html.Input]
-      chatContentScrollSection.scrollTop = chatContentScrollSection.scrollHeight
+      
     }
   }
 

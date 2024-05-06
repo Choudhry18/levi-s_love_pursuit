@@ -10,9 +10,9 @@ class UserManager extends Actor {
   
   import UserManager._
   def receive: Receive = {
-    case RemoveUser(username) => 
+    case RemoveUser(username) => userRefs.filter(u => u._2 != username)
     case recipient: String => {userRefs.find(_._2 == recipient) match {
-      case Some((recipientRef, _)) => recipientRef ! UserActor.UpdateChat
+      case Some((recipientRef, _)) => recipientRef ! UserActor.UpdateChat()
       case None => //If recipient is not connected to socket don
     }}
     case NewUser(u) =>  {
