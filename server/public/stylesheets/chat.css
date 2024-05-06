@@ -11,14 +11,53 @@
 
 /* left search bar and chat bars */
 
-#searchBarContainer {
+/* search bar */
+#searchBarSection {
     grid-column: 1;
     grid-row: 1;
     text-align: center;
     width: 100%;
     background-color: #FFF7FF;
+    display: flex;
+    align-items: end;
+    justify-content: center;
 }
 
+#searchBarContainer {
+  position: relative;
+  width: 73%;
+  height: 40px;
+  margin-bottom: 20px;
+}
+
+#searchGlass {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  width: 27px;
+  height: 27px;
+  /* bottom: 5; */
+  
+}
+#searchBar {
+    width: 100%;
+    height: 100%;
+    padding-left: 40px;
+    padding-right: 0px;
+    /* padding-right: 15px; */
+    box-sizing: border-box;
+    border-radius: 3px;
+    font-size: 20px;
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+}
+#searchBar:focus {
+  outline: none;
+}
+
+
+/* chat bars */
 #chatBarsContainer {
     grid-column: 1;
     grid-row: 2;
@@ -29,11 +68,11 @@
 }
 
 .chatBar {
-    background-color: transparent;
-    border: none;
-    margin-bottom: 10px;
-    cursor: pointer;
-    height: 80px;
+  height: 77px;
+  background-color: transparent;
+  border: none;
+  margin-bottom: 10px;
+  cursor: pointer;
 }
 
 .chatBarName {
@@ -47,7 +86,9 @@
 }
 
 .chatBarBubble {
-    cursor: pointer;
+  width: 80%;
+  height: 100%;
+  /* cursor: pointer; */
 }
 
 /* right chat box */
@@ -134,14 +175,11 @@
     border: 3px solid #410E3B;
 }
 
+::placeholder {
+  color: #60335B;
+}
+
 #chatInput:focus {
-    width: 94%;
-    height: 8%;
-    padding-left: 15px;
-    padding-right: 15px;
-    font-size: 20px;
-    border-radius: 20px;  
-    border: 3px solid #410E3B;
     outline: none;
 }
 
