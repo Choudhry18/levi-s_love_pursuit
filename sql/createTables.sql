@@ -18,7 +18,6 @@ CREATE TABLE profile (
     username VARCHAR(50) NOT NULL REFERENCES users(username) ON DELETE CASCADE,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
-    birthdate DATE,
     bio VARCHAR(500),
     photo_url VARCHAR(200),
     gender VARCHAR(50),
