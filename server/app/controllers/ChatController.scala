@@ -17,6 +17,8 @@ import slick.jdbc.PostgresProfile.api._
 import play.api.db.slick.HasDatabaseConfigProvider
 import play.api.db.slick.DatabaseConfigProvider
 import models.UserChats
+import models.ChatContent
+import models.RequestStatus
 
 
 @Singleton
@@ -56,17 +58,17 @@ class ChatController @Inject() (protected val dbConfigProvider: DatabaseConfigPr
   def getChatContent = Action.async { implicit request =>
     withSessionUsername{ username =>
       withJsonBody[String]{ recipient =>
-        dbModel.getChatContent(username, recipient).map(chatContent => Ok(Json.toJson(chatContent)))
+        dbModel.getChatContent(username, recipient).map(chatContent => Ok(Json.toJson(ChatContent(chatContent))))
       }
-    }(Ok(Json.toJson(Seq.empty[String])))
+    }(Ok(Json.toJson(ChatContent(Nil, true))))
   }
 
   def sendMessage = Action.async { implicit request =>
     withSessionUsername{ sender => 
       withJsonBody[UserMessage] { um =>
         dbModel.addMessage(sender, um.username, um.message) 
-        Future.successful(Ok(Json.toJson(true)))
+        Future.successful(Ok(Json.toJson(RequestStatus(true))))
       }
-    }(Ok(Json.toJson(false)))
+    }(Ok(Json.toJson(RequestStatus(false, true))))
   }
 }

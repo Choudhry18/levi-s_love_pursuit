@@ -17,13 +17,15 @@ import org.scalajs.dom.WebSocket
 
 @react class ChatPageComponent extends Component {
   case class Props(socket: WebSocket)
-  case class State(chats: Seq[String], chatContentRecipient: String)
-  def initialState: State = State(Nil, "")
+  case class State(chats: Seq[String], filterChat: String, chatContentRecipient: String)
+  def initialState: State = State(Nil, "", "")
 
   implicit val ec = scala.concurrent.ExecutionContext.global
 
   val chatsRoute = document.getElementById("chatsRoute").asInstanceOf[html.Input].value
   val chatBarImgRoute = document.getElementById("chatBarImgRoute").asInstanceOf[org.scalajs.dom.html.Input].value
+  val searchGlassImgRoute = document.getElementById("searchGlassImgRoute").asInstanceOf[org.scalajs.dom.html.Input].value
+
   val loginRoute = document.getElementById("loginRoute").asInstanceOf[org.scalajs.dom.html.Input].value
   val socketRoute = document.getElementById("ws-route").asInstanceOf[html.Input].value
 
@@ -41,11 +43,17 @@ import org.scalajs.dom.WebSocket
 
   def render(): ReactElement = {
     div( id:= "chatPage",
-      div( id := "searchBarContainer"),
+      div( id := "searchBarSection",
+        div( id := "searchBarContainer", 
+          img( id := "searchGlass", src := searchGlassImgRoute),
+          input( id := "searchBar", onChange := (e => setState(state.copy(filterChat = e.target.value))))
+        )
+      ),
       div( id := "chatBarsContainer",
-        state.chats.zipWithIndex.map { case (recipient, i) => 
+        state.chats.filter(recipient => if (state.filterChat == "") true else recipient.contains(state.filterChat))
+        .zipWithIndex.map { case (recipient, i) => 
           div(key := i.toString(), className := "chatBar",
-            img(className := "chatBarbubble", src := chatBarImgRoute, key := i.toString(), onClick := (e => {setState(state.copy(chatContentRecipient = recipient))})),
+            img(className := "chatBarBubble", src := chatBarImgRoute, key := i.toString(), onClick := (e => {setState(state.copy(chatContentRecipient = recipient))})),
             div(className := "chatBarName", recipient)
           )
         }

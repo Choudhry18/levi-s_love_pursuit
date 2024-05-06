@@ -15,6 +15,8 @@ import play.api.libs.json.Json
 import scala.scalajs.js
 import models.ReadsAndWrites._
 import models.UserMessage
+import models.ChatContent
+import models.RequestStatus
 
 @react class ChatComponent extends Component {
   case class Props(recipient: String, socket: WebSocket)
@@ -32,10 +34,13 @@ import models.UserMessage
   def fetchChatContent(): Unit = {
     val data = props.recipient
     FetchJson.fetchPost(getChatContentRoute, csrfToken, data, 
-      (chatContent : Seq[UserMessage]) => {
-        println(chatContent)
-        setState(state.copy(chat = chatContent))
-        // setState(state.copy(chat = Nil)
+      (chatContent : ChatContent) => {
+        if (!chatContent.expired) {
+          println(chatContent)
+          setState(state.copy(chat = chatContent.content))
+        } else {
+          window.location.assign(loginRoute)
+        }
       }
     )
   }
@@ -55,6 +60,10 @@ import models.UserMessage
   override def componentDidUpdate(prevProps: Props, prevState: State): Unit = {
     // Fetch new chat content when recipient changes
     if (props.recipient != prevProps.recipient) {
+      //clear current message when recipient changes
+      setState(state.copy(newMessage = ""))
+      //so there's no glitch while chat content is being fetched
+      setState(state.copy(chat = Nil))
       fetchChatContent()
     }
     //scroll down to newest message
@@ -69,18 +78,20 @@ import models.UserMessage
       // println("Sending " + state.newMessage)
       val data = UserMessage(props.recipient, state.newMessage)
       FetchJson.fetchPost(sendMessageRoute, csrfToken, data, 
-        (bool : Boolean) => {if (bool) {
-          //sending the recipient's socket a message to update their chat
-          props.socket.send(props.recipient)
-          fetchChatContent()
-          val chatContentScrollSection = document.getElementById("chatContent").asInstanceOf[org.scalajs.dom.html.Input]
-          chatContentScrollSection.scrollTop = chatContentScrollSection.scrollHeight
-
-        } else println("failed to send message")} 
+        (status : RequestStatus) => 
+          if (!status.expired) {
+            {if (status.success) {
+            //sending the recipient's socket a message to update their chat
+            props.socket.send(props.recipient)
+            fetchChatContent()
+            val chatContentScrollSection = document.getElementById("chatContent").asInstanceOf[org.scalajs.dom.html.Input]
+            chatContentScrollSection.scrollTop = chatContentScrollSection.scrollHeight
+            } else println("failed to send message")} 
+          } else {
+            window.location.assign(loginRoute)
+          }
       )
       setState(state.copy(newMessage = ""))
-      //scroll down to newest message
-      
     }
   }
 
@@ -98,8 +109,10 @@ import models.UserMessage
           }
         ),
       ),
-      input( `type` := "text", value := state.newMessage, id := "chatInput",
-        onChange := (e => setState(state.copy(newMessage = e.target.value))),
+      input( `type` := "text", value := state.newMessage, id := "chatInput", placeholder := "TYPE...",
+        onChange := (e => {
+          setState(state.copy(newMessage = e.target.value))
+        }),
         onKeyDown := (e => sendMessage(e.key))
       )
     )
