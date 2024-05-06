@@ -24,6 +24,7 @@ import models.ReadsAndWrites._
   val validateRoute = document.getElementById("validateRoute").asInstanceOf[html.Input].value
   val createRoute = document.getElementById("createRoute").asInstanceOf[html.Input].value
   val homePageRoute = document.getElementById("homePageRoute").asInstanceOf[html.Input].value
+  val onboardingRoute = document.getElementById("onboardingRoute").asInstanceOf[html.Input].value
 
   def login(): Unit = {
     val data = models.UserData(state.loginName, state.loginPass)
@@ -42,7 +43,7 @@ import models.ReadsAndWrites._
     FetchJson.fetchPost(createRoute, csrfToken, data, (bool : Boolean) => {
       if (bool) {
         println("worked")
-        window.location.assign(homePageRoute)
+        window.location.assign(onboardingRoute)
       } else {
         window.alert("Wrong user name or password")
       }

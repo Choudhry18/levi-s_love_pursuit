@@ -5,5 +5,7 @@
     <input type="hidden" id="onboarding-page" value="">
     <link rel="stylesheet" href="@routes.Assets.versioned("/stylesheets/onboarding.css")">
     <input type="hidden" id="csrfToken" value="@helper.CSRF.getToken.value">
-    <input type="hidden" id="preferenceRoute" value="@routes.PreferenceController.createPreference">
+    <input type="hidden" id="preferenceRoute" value="@routes.OnboardingController.createPreference">
+    <input type="hidden" id="profileRoute" value="@routes.OnboardingController.createProfile">
+    <input type="hidden" id="homePageRoute" value="@routes.HomeController.load">
 }
