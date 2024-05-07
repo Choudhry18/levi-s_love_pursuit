@@ -95,6 +95,7 @@ import models.ChatContent
   }
 
   override def componentDidMount(): Unit = {
+    println("a")
     props.socket.onmessage = {e => {
       println("got a text")
       fetchChatContent()

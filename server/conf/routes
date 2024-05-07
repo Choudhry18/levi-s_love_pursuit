@@ -27,7 +27,8 @@ POST       /createProfile               controllers.OnboardingController.createP
 
 # Match
 
-POST       /getProfiles                 controllers.MatchingController.getProfiles
+GET       /getProfiles                  controllers.MatchingController.getProfiles
+POST      /swipe                        controllers.MatchingController.swipe
 
 # Profile
 GET       /getPhoto                     controllers.ProfileController.getPhoto

@@ -32,4 +32,19 @@ class MatchModel(db: Database)(implicit ec: ExecutionContext) {
       row.major
     )
   }
+
+  def sendSwipe(swiper: String, swipee: String): Future[Boolean] = {
+
+    val query = Swipe.filter(swipeRow => (swipeRow.swiper === swipee && swipeRow.swipee === swiper))
+    db.run(query.result).flatMap{matchRows =>
+      if (matchRows.nonEmpty) {
+        val insertMatch = Match += MatchRow(-1, swiper, swipee)
+        db.run(insertMatch).map(_ > 0)
+      } else {
+        val insertSwipe = Swipe += SwipeRow(-1, swiper, swipee)
+        db.run(insertSwipe).map(_ < 0)
+      }
+    }
+  }
+
 }
