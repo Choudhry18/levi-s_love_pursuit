@@ -19,7 +19,8 @@ import org.scalajs.dom.WebSocket
   def initialState: State = State("Chat", new WebSocket(document.getElementById("ws-route").asInstanceOf[html.Input].value.replace("http", "ws")))
 
   implicit val ec = scala.concurrent.ExecutionContext.global
-  
+  val loginRoute = document.getElementById("loginRoute").asInstanceOf[html.Input].value
+  val logoutRoute = document.getElementById("logoutRoute").asInstanceOf[html.Input].value 
   lazy val chatPageComponent: ReactElement = ChatPageComponent(state.socket)
   lazy val matchingPageComponent: ReactElement = MatchingPageComponent()
   lazy val profilePageComponent: ReactElement = ProfilePageComponent()
@@ -37,11 +38,18 @@ import org.scalajs.dom.WebSocket
         div( id := "pageButtonsContainer",
           pages.keySet.zipWithIndex.map { case (pageName, i) =>
             button(key := i.toString(), className := "pageButton", id := {if (pageName == state.page) "selectedButton" else ""}, onClick := (e => {setState(state.copy(page = pageName))}), pageName)
-          }
+          },
+          button(key := pages.length.toString(), className := "pageButton", onClick := (e => logoutGet()), "Logout")
         )
       ),
       selectPage()
     )
+  }
+
+  val logoutGet = () => {
+    FetchJson.fetchGet(logoutRoute,(done : Boolean) => {
+      window.location.assign(loginRoute)
+    } )
   }
 
 }
