@@ -22,7 +22,7 @@ POST       /createUser                  controllers.Authentication.createUser
 POST       /uploadPhoto                 controllers.OnboardingController.uploadPhoto
 GET        /onboarding                  controllers.OnboardingController.load
 POST       /createPreference            controllers.OnboardingController.createPreference
-POST      /createProfile                controllers.OnboardingController.createProfile
+POST       /createProfile               controllers.OnboardingController.createProfile
 
 
 # Match
@@ -31,6 +31,8 @@ POST       /getProfiles                 controllers.MatchingController.getProfil
 
 # Profile
 GET       /getPhoto                     controllers.ProfileController.getPhoto
+GET       /getProfile                   controllers.ProfileController.getProfile
+GET       /getPreferences               controllers.ProfileController.getPreferences
 
 
 # Prefix must match `play.assets.urlPrefix`

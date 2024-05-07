@@ -59,6 +59,7 @@ INSERT INTO users (username, password, email) VALUES ('choudhry', 'pass', 'choud
 INSERT INTO users (username, password, email) VALUES ('harry', 'pass', 'harry@trinity.edu');
 
 
+
 -- For user 'kevin'
 INSERT INTO profile (username, first_name, last_name, bio, photo, gender, year, greek_association, religion, commitment, major)
 VALUES ('kevin', 'Kevin', 'Lastname', 'Bio of Kevin', NULL, 'Male', 'Senior', 'Alpha Beta', 'Christian', 'High', 'Computer Science');
@@ -66,6 +67,9 @@ VALUES ('kevin', 'Kevin', 'Lastname', 'Bio of Kevin', NULL, 'Male', 'Senior', 'A
 -- For user 'levi'
 INSERT INTO profile (username, first_name, last_name, bio, photo, gender, year, greek_association, religion, commitment, major)
 VALUES ('levi', 'Levi', 'Lastname', 'Bio of Levi', NULL, 'Male', 'Junior', NULL, 'Atheist', 'Medium', 'Business Administration');
+
+INSERT INTO profile (username, first_name, last_name, bio, photo, gender, year, greek_association, religion, commitment, major)
+VALUES ('ktran1', 'Levi', 'Lastname', 'Bio of Levi', NULL, 'Male', 'Junior', NULL, 'Atheist', 'Medium', 'Business Administration');
 
 /* creating matches and send messages*/
 DO $$

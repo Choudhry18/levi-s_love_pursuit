@@ -48,4 +48,22 @@ class ProfileController @Inject() (protected val dbConfigProvider: DatabaseConfi
       dbModel.getPhoto(username).map(bArray => Ok(Json.toJson(bArray)))
     )(Ok(Json.toJson(Array.emptyByteArray)))
   }
+
+    def getProfile = Action.async { implicit request =>
+    withSessionUsername(
+      username => dbModel.getProfile(username).map {
+        case Some(profile) => Ok(Json.toJson(profile))
+        case None => NotFound(Json.obj("error" -> "Profile not found"))
+      }
+    )(Unauthorized(Json.obj("error" -> "Unauthorized")))
+  }
+
+  def getPreferences = Action.async { implicit request =>
+    withSessionUsername(
+      username => dbModel.getPreferences(username).map {
+        case Some(preferences) => Ok(Json.toJson(preferences))
+        case None => NotFound(Json.obj("error" -> "Preferences not found"))
+      }
+    )(Unauthorized(Json.obj("error" -> "Unauthorized")))
+  }
 }
