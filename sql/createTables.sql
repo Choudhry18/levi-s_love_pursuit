@@ -60,12 +60,12 @@ INSERT INTO users (username, password, email) VALUES ('harry', 'pass', 'harry@tr
 
 
 -- For user 'kevin'
-INSERT INTO profile (username, first_name, last_name, birthdate, bio, photo_url, gender, year, greek_association, religion, commitment, major)
-VALUES ('kevin', 'Kevin', 'Lastname', '1990-01-01', 'Bio of Kevin', 'http://example.com/kevin.jpg', 'Male', 'Senior', 'Alpha Beta', 'Christian', 'High', 'Computer Science');
+INSERT INTO profile (username, first_name, last_name, bio, photo_url, gender, year, greek_association, religion, commitment, major)
+VALUES ('kevin', 'Kevin', 'Lastname', 'Bio of Kevin', NULL, 'Male', 'Senior', 'Alpha Beta', 'Christian', 'High', 'Computer Science');
 
 -- For user 'levi'
-INSERT INTO profile (username, first_name, last_name, birthdate, bio, photo_url, gender, year, greek_association, religion, commitment, major)
-VALUES ('levi', 'Levi', 'Lastname', '1992-05-20', 'Bio of Levi', 'http://example.com/levi.jpg', 'Male', 'Junior', NULL, 'Atheist', 'Medium', 'Business Administration');
+INSERT INTO profile (username, first_name, last_name, bio, photo_url, gender, year, greek_association, religion, commitment, major)
+VALUES ('levi', 'Levi', 'Lastname', 'Bio of Levi', NULL, 'Male', 'Junior', NULL, 'Atheist', 'Medium', 'Business Administration');
 
 /* creating matches and send messages*/
 DO $$
