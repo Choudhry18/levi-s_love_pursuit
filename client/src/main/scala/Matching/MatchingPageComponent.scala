@@ -55,7 +55,6 @@ import scala.scalajs.js
     }
 
     def render(): ReactElement = {
-        val cur = profiles(state.currentIndex)
         if (profiles.isEmpty) {
         div(
             id := "matchingPage",
@@ -72,7 +71,7 @@ import scala.scalajs.js
                 id := "profileContent", // ID for the profile content
                 h3("Profile"),
                 div(id := "image-container")(
-                    img(src := makePhoto(cur.photo), id := "profile-image")),
+                    img(src := makePhoto(profiles(state.currentIndex).photo), id := "profile-image")),
                 p(s"Username: ${profiles(state.currentIndex).username}"),
                 p(s"First Name: ${profiles(state.currentIndex).firstName}"),
                 p(s"Last Name: ${profiles(state.currentIndex).lastName}")
