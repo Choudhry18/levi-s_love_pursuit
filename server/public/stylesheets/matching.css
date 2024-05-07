@@ -1,0 +1,20 @@
+#matchingPage {
+    /* Styles for the main container */
+  }
+  
+  #profileDisplay {
+    /* Styles for the profile display */
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+  }
+  
+  #profileContent {
+    /* Styles for the profile content */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: black; /* Example: set text color to white */
+  }

@@ -13,46 +13,57 @@ import models.UserChats
 import models.ReadsAndWrites._
 import models.ProfileData
 
+import org.scalajs.dom.KeyboardEvent
+
+
+
 @react class MatchingPageComponent extends Component {
   type Props = Unit
-  case class State(profile: Option[Seq[ProfileData]], currentIndex: Int)
-  def initialState = State(None, 0)
+  case class State(currentIndex: Int)
+  var profiles : Seq[ProfileData] = Nil
+  def initialState = State(0)
 
   val matchRoute = document.getElementById("MatchRoute").asInstanceOf[html.Input].value
   val csrfToken = document.getElementById("csrfToken").asInstanceOf[org.scalajs.dom.html.Input].value
   implicit val ec = scala.concurrent.ExecutionContext.global
 
+  val handleKeyPress = (event: KeyboardEvent) => {
+        setState(state.copy(currentIndex = state.currentIndex+1))
+    }
   override def componentDidMount(): Unit = {
+    document.addEventListener("keydown", handleKeyPress)
     FetchJson.fetchPost(matchRoute, csrfToken, "hehe",
       (matchContent: Seq[ProfileData]) => {
-        setState(state.copy(profile = Some(matchContent)))
+        profiles = matchContent
+        forceUpdate()
       }
     )
   }
 
   def render(): ReactElement = {
-    val profileData = state.profile.getOrElse(Seq.empty)
-
-    div(
+    if (profiles.isEmpty) {
+      div(
         id := "matchingPage",
-        state.profile match {
-            case Some(profileData) if profileData.nonEmpty =>
+        p("Loading...")
+      )
+    } else {
+      div(
+        id := "matchingPage",
+        div(
+          id := "profileDisplay", // ID for the profile display
+          div(
+            key := profiles(state.currentIndex).username,
             div(
-                profileData.map { profile =>
-                div(
-                    key := profile.username,
-                    div(
-                    h3("Profile"),
-                    p(s"Username: ${profile.username}"),
-                    p(s"First Name: ${profile.firstName}"),
-                    p(s"Last Name: ${profile.lastName}")
-                    )
-                )
-                }
+              id := "profileContent", // ID for the profile content
+              h3("Profile"),
+              p(s"Username: ${profiles(state.currentIndex).username}"),
+              p(s"First Name: ${profiles(state.currentIndex).firstName}"),
+              p(s"Last Name: ${profiles(state.currentIndex).lastName}")
             )
-            case _ =>
-            p("No profiles found.")
-        }
-    )
+          )
+        )
+      )
+    }
   }
+
 }
