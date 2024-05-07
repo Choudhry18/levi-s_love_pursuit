@@ -87,9 +87,11 @@ import models.UserData
           val xhr = new dom.XMLHttpRequest()
           xhr.open("POST", uploadPhoto)
           xhr.setRequestHeader("Csrf-Token", csrfToken)
+          val formData = new dom.FormData()
+          formData.append("fieldName",state.photo)
           // xhr.onload = { (e: dom.Event) => 
           //     success(xhr.response)}
-          xhr.send(state.photo)
+          xhr.send(formData)
         }
       })
     }

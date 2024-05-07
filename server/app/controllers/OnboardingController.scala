@@ -16,6 +16,7 @@ import slick.jdbc.JdbcProfile
 import play.api.db.slick.HasDatabaseConfigProvider
 import play.api.db.slick.DatabaseConfigProvider
 import akka.util.ByteString
+import java.io.ByteArrayOutputStream
 
 
 @Singleton
@@ -79,9 +80,21 @@ class OnboardingController @Inject() (protected val dbConfigProvider: DatabaseCo
 
   def uploadPhoto = Action.async {implicit request => 
     withSessionUsername{ username =>
-      val maybeBytes: Option[ByteString] = request.body.asRaw.flatMap(rb => rb.asBytes())
-      val byteArray: Array[Byte] = maybeBytes.map(_.toArray).getOrElse(Array.emptyByteArray) 
-      dbModel.uploadPhoto(byteArray, username).map(bool => Ok(Json.toJson(bool)))
+      val multipartData = request.body.asMultipartFormData
+      if (multipartData.isDefined) {
+        val file = multipartData.get.file("fieldName")
+        val tempFile = file.get.ref
+        if (file.isDefined) {
+          val inputStream = file.get.refToBytes(tempFile) match {
+            case Some(bytes) => {
+                val byteArray: Array[Byte] = bytes.toArray 
+                dbModel.uploadPhoto(byteArray, username).map(bool => Ok(Json.toJson(bool)))
+              }
+            case None =>
+          }
+        }
+      }
+      Future.successful(Ok(Json.toJson(true)))
     }(Ok(Json.toJson(false)))
   }
 
