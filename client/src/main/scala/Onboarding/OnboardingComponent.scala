@@ -146,7 +146,7 @@ import models.UserData
       br(),
       span("Religion: "),
       input(`type` := "text", value := state.religion, onChange := (e => setState(state.copy(religion = e.target.value)))),
-      br(),
+      br(), 
       span("Major: "),
       input(`type` := "text", value := state.major, onChange := (e => setState(state.copy(major = e.target.value)))),
       br(),

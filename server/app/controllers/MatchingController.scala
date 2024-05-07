@@ -19,6 +19,7 @@ import play.api.db.slick.DatabaseConfigProvider
 import models.UserChats
 import models.ProfileData
 import scala.util.{Success, Failure}
+import models.SwipeResult
 
 @Singleton
 class MatchingController @Inject() (protected val dbConfigProvider: DatabaseConfigProvider, cc: ControllerComponents)(implicit ec: ExecutionContext) 
@@ -47,6 +48,12 @@ extends AbstractController(cc) with HasDatabaseConfigProvider[JdbcProfile] {
         withSessionUsername{ username =>
             dbModel.getProfiles(username).map(profiles => Ok(Json.toJson(profiles)))
         }(Ok(Json.toJson(UserChats(Nil, expired = true))))
+    }
+
+    def swipe = Action.async {implicit request =>
+        withSessionUsername{ username =>
+          withJsonBody[String]( swipee => dbModel.sendSwipe(username, swipee).map(success => Ok(Json.toJson(SwipeResult(success, false)))))
+        }(Ok(Json.toJson(SwipeResult(false, true))))
     }
 
 }

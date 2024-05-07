@@ -5,6 +5,7 @@ import play.api.libs.json.Json
 case class UserData(email: String, username: String, password: String, expired: Boolean = false) 
 case class UserMessage(username: String, message: String)
 case class UserChats(chats: Seq[String], expired: Boolean = false)
+case class SwipeResult(isMatched: Boolean, expired: Boolean = false)
 
 case class ProfileData(
   username: String,
@@ -46,4 +47,6 @@ object ReadsAndWrites {
   implicit val chatContentWrites = Json.writes[ChatContent]
   implicit val statusReads = Json.reads[RequestStatus]
   implicit val statusWrites = Json.writes[RequestStatus]
+  implicit val swipeResultReads = Json.reads[SwipeResult]
+  implicit val swipeResultWrites = Json.writes[SwipeResult]
 }

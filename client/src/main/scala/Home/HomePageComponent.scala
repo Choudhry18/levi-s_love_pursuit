@@ -16,7 +16,7 @@ import org.scalajs.dom.WebSocket
 @react class HomePageComponent extends Component {
   type Props = Unit
   case class State(page: String, socket: WebSocket)
-  def initialState: State = State("Chat", new WebSocket(document.getElementById("ws-route").asInstanceOf[html.Input].value.replace("http", "ws")))
+  def initialState: State = State("Matching", new WebSocket(document.getElementById("ws-route").asInstanceOf[html.Input].value.replace("http", "ws")))
 
   implicit val ec = scala.concurrent.ExecutionContext.global
   val loginRoute = document.getElementById("loginRoute").asInstanceOf[html.Input].value

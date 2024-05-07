@@ -14,9 +14,13 @@ import models.ReadsAndWrites._
 import models.ProfileData
 import org.scalajs.dom.raw.URL
 import org.scalajs.dom.KeyboardEvent
+import _root_.playscala.FetchJson.fetchPost
+import models.RequestStatus
+import models.SwipeResult
 import scalajs.js.typedarray.AB2TA
 import org.scalajs.dom.raw.Blob
 import scala.scalajs.js
+
 
 @react class MatchingPageComponent extends Component {
     type Props = Unit
@@ -26,18 +30,38 @@ import scala.scalajs.js
 
     val matchRoute = document.getElementById("MatchRoute").asInstanceOf[html.Input].value
     val csrfToken = document.getElementById("csrfToken").asInstanceOf[org.scalajs.dom.html.Input].value
+    val swipeRoute = document.getElementById("swipeRoute").asInstanceOf[org.scalajs.dom.html.Input].value
     implicit val ec = scala.concurrent.ExecutionContext.global
 
     val handleKeyPress = (event: KeyboardEvent) => {
-        if(state.currentIndex >= profiles.length - 1){
-            setState(state.copy(currentIndex = 0))
-        }else{
-            setState(state.copy(currentIndex = state.currentIndex+1))
-        }
+      //swiping left and reject
+      if (event.keyCode == 37) {
+
+      
+      } //swiping right and accept
+      else if (event.keyCode == 39) { 
+        //removing the swiped person from the list of users
+        
+        fetchPost(swipeRoute, csrfToken, profiles(state.currentIndex).username, 
+          (sr: SwipeResult) => if (sr.expired) {
+
+          } else if (sr.isMatched) {
+              window.alert("You and this person matched! Go check your chat")
+          } 
+        )
+        profiles = profiles.patch(state.currentIndex, Nil, 1)
+      }
+
+      //if you have exhausted the list, then go back to the beginning
+      if(state.currentIndex >= profiles.length - 1){
+          setState(state.copy(currentIndex = 0))
+      }else{
+          setState(state.copy(currentIndex = state.currentIndex+1))
+      }
     }
   override def componentDidMount(): Unit = {
     document.addEventListener("keydown", handleKeyPress)
-    FetchJson.fetchPost(matchRoute, csrfToken, "hehe",
+    FetchJson.fetchGet(matchRoute,
       (matchContent: Seq[ProfileData]) => {
         profiles = matchContent
         println(profiles(0).firstName)

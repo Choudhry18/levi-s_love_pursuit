@@ -14,7 +14,7 @@ trait Tables {
   import slick.jdbc.{GetResult => GR}
 
   /** DDL for all tables. Call .create to execute. */
-  lazy val schema: profile.SchemaDescription = Match.schema ++ Message.schema ++ Preference.schema ++ Profile.schema ++ Users.schema
+  lazy val schema: profile.SchemaDescription = Array(Match.schema, Message.schema, Preference.schema, Profile.schema, Swipe.schema, Users.schema).reduceLeft(_ ++ _)
   @deprecated("Use .schema instead of .ddl", "3.0")
   def ddl = schema
 
@@ -185,6 +185,37 @@ trait Tables {
   }
   /** Collection-like TableQuery object for table Profile */
   lazy val Profile = new TableQuery(tag => new Profile(tag))
+
+  /** Entity class storing rows of table Swipe
+   *  @param swipeId Database column swipe_id SqlType(serial), AutoInc, PrimaryKey
+   *  @param swiper Database column swiper SqlType(varchar), Length(50,true)
+   *  @param swipee Database column swipee SqlType(varchar), Length(50,true) */
+  case class SwipeRow(swipeId: Int, swiper: String, swipee: String)
+  /** GetResult implicit for fetching SwipeRow objects using plain SQL queries */
+  implicit def GetResultSwipeRow(implicit e0: GR[Int], e1: GR[String]): GR[SwipeRow] = GR{
+    prs => import prs._
+    SwipeRow.tupled((<<[Int], <<[String], <<[String]))
+  }
+  /** Table description of table swipe. Objects of this class serve as prototypes for rows in queries. */
+  class Swipe(_tableTag: Tag) extends profile.api.Table[SwipeRow](_tableTag, "swipe") {
+    def * = (swipeId, swiper, swipee).<>(SwipeRow.tupled, SwipeRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = ((Rep.Some(swipeId), Rep.Some(swiper), Rep.Some(swipee))).shaped.<>({r=>import r._; _1.map(_=> SwipeRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column swipe_id SqlType(serial), AutoInc, PrimaryKey */
+    val swipeId: Rep[Int] = column[Int]("swipe_id", O.AutoInc, O.PrimaryKey)
+    /** Database column swiper SqlType(varchar), Length(50,true) */
+    val swiper: Rep[String] = column[String]("swiper", O.Length(50,varying=true))
+    /** Database column swipee SqlType(varchar), Length(50,true) */
+    val swipee: Rep[String] = column[String]("swipee", O.Length(50,varying=true))
+
+    /** Foreign key referencing Users (database name swipe_swipee_fkey) */
+    lazy val usersFk1 = foreignKey("swipe_swipee_fkey", swipee, Users)(r => r.username, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.Cascade)
+    /** Foreign key referencing Users (database name swipe_swiper_fkey) */
+    lazy val usersFk2 = foreignKey("swipe_swiper_fkey", swiper, Users)(r => r.username, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.Cascade)
+  }
+  /** Collection-like TableQuery object for table Swipe */
+  lazy val Swipe = new TableQuery(tag => new Swipe(tag))
 
   /** Entity class storing rows of table Users
    *  @param username Database column username SqlType(varchar), PrimaryKey, Length(50,true)
