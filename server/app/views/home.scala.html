@@ -5,12 +5,15 @@
     <input type="hidden" id="csrfToken" value="@helper.CSRF.getToken.value">
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/home.css")">
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/chat.css")">
+    <input type="hidden" id="home-page" value="">
 
     <!-- Chat functionalities -->
-    <input type="hidden" id="home-page" value="">
     <input type="hidden" id="chatsRoute" value="@routes.ChatController.chats">
     <input type="hidden" id="getChatContentRoute" value="@routes.ChatController.getChatContent">
     <input type="hidden" id="sendMessageRoute" value="@routes.ChatController.sendMessage">
     <input type="hidden" id="loginRoute" value="@routes.Authentication.load">
     <input type="hidden" id="chatBarImgRoute" value="@routes.Assets.versioned("/images/chat.png")">
+
+    <!-- Matching functionalities-->
+    <input type="hidden" id="MatchRoute" value="@routes.MatchingController.getProfiles">
 }

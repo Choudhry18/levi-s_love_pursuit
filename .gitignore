@@ -20,6 +20,7 @@ dist
 /RUNNING_PID
 .settings
 .DS_Store
+./server/conf/application.conf
 
 # hidden cross project folders
 shared/.js

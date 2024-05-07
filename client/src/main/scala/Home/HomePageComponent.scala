@@ -20,7 +20,8 @@ import models.ReadsAndWrites._
   implicit val ec = scala.concurrent.ExecutionContext.global
 
   lazy val chatPageComponent: ReactElement = ChatPageComponent()
-  val pages: Map[String, ReactElement] =  Map("Matching" -> chatPageComponent, "Profile" -> chatPageComponent, "Chat" -> chatPageComponent)
+  lazy val matchingPageComponenet: ReactElement = MatchingPageComponent()
+  val pages: Map[String, ReactElement] =  Map("Matching" -> matchingPageComponenet, "Profile" -> chatPageComponent, "Chat" -> chatPageComponent)
 
   def selectPage(): ReactElement = pages.get(state.page)
 
