@@ -9,7 +9,10 @@
   <input type="hidden" id="home-page" value="">
 
   <!-- Profile page -->
+  <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/profile.css")">
   <input type="hidden" id="getPhotoRoute" value="@routes.ProfileController.getPhoto">
+  <input type="hidden" id="getProfileRoute" value="@routes.ProfileController.getProfile">
+  <input type="hidden" id="getPreferencesRoute" value="@routes.ProfileController.getPreferences">
 
   <!-- Chat functionalities -->
   <input type="hidden" id="chatsRoute" value="@routes.ChatController.chats">
