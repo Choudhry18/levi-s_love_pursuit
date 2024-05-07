@@ -60,11 +60,11 @@ INSERT INTO users (username, password, email) VALUES ('harry', 'pass', 'harry@tr
 
 
 -- For user 'kevin'
-INSERT INTO profile (username, first_name, last_name, bio, photo_url, gender, year, greek_association, religion, commitment, major)
+INSERT INTO profile (username, first_name, last_name, bio, photo, gender, year, greek_association, religion, commitment, major)
 VALUES ('kevin', 'Kevin', 'Lastname', 'Bio of Kevin', NULL, 'Male', 'Senior', 'Alpha Beta', 'Christian', 'High', 'Computer Science');
 
 -- For user 'levi'
-INSERT INTO profile (username, first_name, last_name, bio, photo_url, gender, year, greek_association, religion, commitment, major)
+INSERT INTO profile (username, first_name, last_name, bio, photo, gender, year, greek_association, religion, commitment, major)
 VALUES ('levi', 'Levi', 'Lastname', 'Bio of Levi', NULL, 'Male', 'Junior', NULL, 'Atheist', 'Medium', 'Business Administration');
 
 /* creating matches and send messages*/
