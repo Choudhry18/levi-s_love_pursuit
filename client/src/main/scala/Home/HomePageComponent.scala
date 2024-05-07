@@ -32,6 +32,7 @@ import org.scalajs.dom.WebSocket
     state.socket.send("close")
     state.socket.close()
   }
+  
   def render(): ReactElement = {
     div( id:="homePage",
       div( id:="navbar",
