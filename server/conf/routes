@@ -19,13 +19,19 @@ GET        /logout                      controllers.Authentication.logout
 POST       /createUser                  controllers.Authentication.createUser
 
 # Onboarding
+POST       /uploadPhoto                 controllers.OnboardingController.uploadPhoto
 GET        /onboarding                  controllers.OnboardingController.load
 POST       /createPreference            controllers.OnboardingController.createPreference
 POST      /createProfile                controllers.OnboardingController.createProfile
 
+
 # Match
 
 POST       /getProfiles                 controllers.MatchingController.getProfiles
+
+# Profile
+GET       /getPhoto                     controllers.ProfileController.getPhoto
+
 
 # Prefix must match `play.assets.urlPrefix`
 GET        /assets/*file                 controllers.Assets.at(file)

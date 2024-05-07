@@ -13,6 +13,8 @@ import org.scalajs.dom.window
 import slinky.web.html._
 import org.scalajs.dom.Blob
 import scala.annotation.switch
+import org.scalajs.dom.File
+import org.scalajs.dom
 
 // Main Onboarding component that switches between profile component and preference component
 @react class OnboardingComponent extends Component {
@@ -35,21 +37,23 @@ import scala.annotation.switch
 
 @react class ProfileComponent extends Component {
   case class Props(switchOnboarding: () => Unit)
-  case class State( firstName: String, lastName: String, bio: String, photo: String, gender: String, 
+
+  case class State( firstName: String, lastName: String, bio: String, photo: File, gender: String, 
     year: String, greek_association: String, religion: String, commitment: String, major: String
   )
 
-  def initialState: State = State("", "", "", "", "", "", "", "", "", "")
+  def initialState: State = State("", "", "", null, "", "", "", "", "", "")
 
   val profileRoute = document.getElementById("profileRoute").asInstanceOf[html.Input].value
   val csrfToken = document.getElementById("csrfToken").asInstanceOf[html.Input].value
+  val uploadPhoto = document.getElementById("uploadPhoto").asInstanceOf[html.Input].value
   implicit val ec = scala.concurrent.ExecutionContext.global
 
   def submitProfile() : Unit = {
     if (state.firstName.isEmpty() || state.lastName.isEmpty()) {
       window.alert("fill out first and last name before submitting")
     } else {
-      val data = models.ProfileData( state.firstName, state.lastName, state.bio, state.photo, state.gender, 
+      val data = models.ProfileData( state.firstName, state.lastName, state.bio, state.gender, 
       state.year, state.greek_association, state.religion, state.commitment, state.major)
 
       FetchJson.fetchPost(profileRoute, csrfToken, data, (bool: Boolean) => {
@@ -57,10 +61,17 @@ import scala.annotation.switch
           println("Profile saved")
           props.switchOnboarding()
         } else {
-            window.alert("Failed to save preferences")
+          window.alert("Failed to save preferences")
         }
       })
-      
+
+      val xhr = new dom.XMLHttpRequest()
+      xhr.open("POST", uploadPhoto)
+      xhr.setRequestHeader("Csrf-Token", csrfToken)
+      // xhr.onload = { (e: dom.Event) => 
+      //     success(xhr.response)}
+      xhr.send(state.photo)
+
     }
   }
 
@@ -78,7 +89,7 @@ import scala.annotation.switch
       input(`type` := "text", value := state.bio, onChange := (e => setState(state.copy(bio = e.target.value)))),
       br(),
       span("Photo: "),
-      input(`type` := "text", value := state.photo, onChange := (e => setState(state.copy(photo = e.target.value)))),
+      input(`type` := "file", onChange := (e => setState(state.copy(photo = e.target.files(0))))),
       br(),
       span("Gender: "),
       input(`type` := "text", value := state.gender, onChange := (e => setState(state.copy(gender = e.target.value)))),

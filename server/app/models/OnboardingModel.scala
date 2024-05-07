@@ -14,8 +14,14 @@ class OnboardingModel(db: Database)(implicit ec: ExecutionContext) {
 
 
   def createProfile(pd: ProfileData, username: String): Future[Boolean] = {
-    val action = (Profile += ProfileRow(0, username, pd.firstName, pd.lastName, Option(pd.bio), Option(pd.photo), Option(pd.gender), Option(pd.year), 
+    val action = (Profile += ProfileRow(0, username, pd.firstName, pd.lastName, Option(pd.bio), null, Option(pd.gender), Option(pd.year), 
     Option(pd.greek_association), Option(pd.religion), Option(pd.commitment), Option(pd.major)))
     db.run(action).map(_ > 0)
+  }
+
+  def uploadPhoto(byteArray: Array[Byte], username: String): Future[Boolean] = {
+    val photo = for { prof <- Profile if prof.username === username } yield prof.photo
+    val updateAction = photo.update(Option(byteArray))
+    db.run(updateAction).map(_ > 0)
   }
 }
