@@ -18,7 +18,6 @@ CREATE TABLE profile (
     username VARCHAR(50) NOT NULL REFERENCES users(username) ON DELETE CASCADE,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
-    birthdate DATE,
     bio VARCHAR(500),
     photo_url VARCHAR(200),
     gender VARCHAR(50),
@@ -56,6 +55,9 @@ CREATE TABLE message (
 
 INSERT INTO users (username, password, email) VALUES ('kevin', 'pass', 'kevin@trinity.edu');
 INSERT INTO users (username, password, email) VALUES ('levi', 'pass', 'levi@trinity.edu');
+INSERT INTO users (username, password, email) VALUES ('choudhry', 'pass', 'choudhry@trinity.edu');
+INSERT INTO users (username, password, email) VALUES ('harry', 'pass', 'harry@trinity.edu');
+
 
 -- For user 'kevin'
 INSERT INTO profile (username, first_name, last_name, birthdate, bio, photo_url, gender, year, greek_association, religion, commitment, major)
@@ -72,6 +74,8 @@ DECLARE
 BEGIN
   /* creating match */
   INSERT INTO match (username1, username2) VALUES ('levi', 'kevin');
+  INSERT INTO match (username1, username2) VALUES ('levi', 'choudhry');
+  INSERT INTO match (username1, username2) VALUES ('levi', 'harry');
   /* messages */
   SELECT match_id INTO levi_kevin_match_id FROM match WHERE username1 = 'levi' AND username2 = 'kevin';
   INSERT INTO message (match_id, sender_username, message_text) VALUES (levi_kevin_match_id, 'levi', 'Hi Kevin');

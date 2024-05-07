@@ -3,12 +3,13 @@
 # ~~~~
 
 # Home
-GET         /home                       controllers.HomeController.load
+GET        /home                        controllers.HomeController.load
+
 # Chat page
-# GET        /chat                        controllers.ChatController.load
 GET        /getChats                    controllers.ChatController.chats
 POST       /getChatContent              controllers.ChatController.getChatContent
 POST       /sendMessage                 controllers.ChatController.sendMessage
+GET        /socket                      controllers.HomeController.socket
 
 # Login
 GET        /                            controllers.Authentication.load
@@ -17,8 +18,10 @@ POST       /validate                    controllers.Authentication.validate
 GET        /logout                      controllers.Authentication.logout
 POST       /createUser                  controllers.Authentication.createUser
 
-GET        /onboarding                   controllers.PreferenceController.load
-POST       /createPreference             controllers.PreferenceController.createPreference
+# Onboarding
+GET        /onboarding                  controllers.OnboardingController.load
+POST       /createPreference            controllers.OnboardingController.createPreference
+POST      /createProfile                controllers.OnboardingController.createProfile
 
 # Match
 

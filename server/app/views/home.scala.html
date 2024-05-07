@@ -1,19 +1,23 @@
 @()(implicit request: RequestHeader)
 
 @main("Home"){
-    <div id="react-root"></div>
-    <input type="hidden" id="csrfToken" value="@helper.CSRF.getToken.value">
-    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/home.css")">
-    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/chat.css")">
-    <input type="hidden" id="home-page" value="">
+  <div id="react-root"></div>
+  <input type="hidden" id="csrfToken" value="@helper.CSRF.getToken.value">
+  <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/home.css")">
+  <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/chat.css")">
+  <input type="hidden" id="home-page" value="">
 
-    <!-- Chat functionalities -->
-    <input type="hidden" id="chatsRoute" value="@routes.ChatController.chats">
-    <input type="hidden" id="getChatContentRoute" value="@routes.ChatController.getChatContent">
-    <input type="hidden" id="sendMessageRoute" value="@routes.ChatController.sendMessage">
-    <input type="hidden" id="loginRoute" value="@routes.Authentication.load">
-    <input type="hidden" id="chatBarImgRoute" value="@routes.Assets.versioned("/images/chat.png")">
+  <!-- Chat functionalities -->
+  <input type="hidden" id="chatsRoute" value="@routes.ChatController.chats">
+  <input type="hidden" id="getChatContentRoute" value="@routes.ChatController.getChatContent">
+  <input type="hidden" id="sendMessageRoute" value="@routes.ChatController.sendMessage">
+  <input type="hidden" id="loginRoute" value="@routes.Authentication.load">
+  <input type="hidden" id="chatBarImgRoute" value="@routes.Assets.versioned("/images/chat.png")">
+  <input type="hidden" id="searchGlassImgRoute" value="@routes.Assets.versioned("/images/searchGlass.png")">
+  <!-- Web socket-->
+  <input type="hidden" id="ws-route" value="@routes.HomeController.socket.absoluteURL()">
 
-    <!-- Matching functionalities-->
-    <input type="hidden" id="MatchRoute" value="@routes.MatchingController.getProfiles">
+  <!-- Matching functionalities-->
+  <input type="hidden" id="MatchRoute" value="@routes.MatchingController.getProfiles">
+
 }

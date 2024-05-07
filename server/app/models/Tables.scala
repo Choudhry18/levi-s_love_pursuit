@@ -135,7 +135,6 @@ trait Tables {
    *  @param username Database column username SqlType(varchar), Length(50,true)
    *  @param firstName Database column first_name SqlType(varchar), Length(50,true)
    *  @param lastName Database column last_name SqlType(varchar), Length(50,true)
-   *  @param birthdate Database column birthdate SqlType(date), Default(None)
    *  @param bio Database column bio SqlType(varchar), Length(500,true), Default(None)
    *  @param photoUrl Database column photo_url SqlType(varchar), Length(200,true), Default(None)
    *  @param gender Database column gender SqlType(varchar), Length(50,true), Default(None)
@@ -144,17 +143,17 @@ trait Tables {
    *  @param religion Database column religion SqlType(varchar), Length(50,true), Default(None)
    *  @param commitment Database column commitment SqlType(varchar), Length(50,true), Default(None)
    *  @param major Database column major SqlType(varchar), Length(50,true), Default(None) */
-  case class ProfileRow(profileId: Int, username: String, firstName: String, lastName: String, birthdate: Option[java.sql.Date] = None, bio: Option[String] = None, photoUrl: Option[String] = None, gender: Option[String] = None, year: Option[String] = None, greekAssociation: Option[String] = None, religion: Option[String] = None, commitment: Option[String] = None, major: Option[String] = None)
+  case class ProfileRow(profileId: Int, username: String, firstName: String, lastName: String, bio: Option[String] = None, photoUrl: Option[String] = None, gender: Option[String] = None, year: Option[String] = None, greekAssociation: Option[String] = None, religion: Option[String] = None, commitment: Option[String] = None, major: Option[String] = None)
   /** GetResult implicit for fetching ProfileRow objects using plain SQL queries */
-  implicit def GetResultProfileRow(implicit e0: GR[Int], e1: GR[String], e2: GR[Option[java.sql.Date]], e3: GR[Option[String]]): GR[ProfileRow] = GR{
+  implicit def GetResultProfileRow(implicit e0: GR[Int], e1: GR[String], e2: GR[Option[String]]): GR[ProfileRow] = GR{
     prs => import prs._
-    ProfileRow.tupled((<<[Int], <<[String], <<[String], <<[String], <<?[java.sql.Date], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String]))
+    ProfileRow.tupled((<<[Int], <<[String], <<[String], <<[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String]))
   }
   /** Table description of table profile. Objects of this class serve as prototypes for rows in queries. */
   class Profile(_tableTag: Tag) extends profile.api.Table[ProfileRow](_tableTag, "profile") {
-    def * = (profileId, username, firstName, lastName, birthdate, bio, photoUrl, gender, year, greekAssociation, religion, commitment, major).<>(ProfileRow.tupled, ProfileRow.unapply)
+    def * = (profileId, username, firstName, lastName, bio, photoUrl, gender, year, greekAssociation, religion, commitment, major).<>(ProfileRow.tupled, ProfileRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = ((Rep.Some(profileId), Rep.Some(username), Rep.Some(firstName), Rep.Some(lastName), birthdate, bio, photoUrl, gender, year, greekAssociation, religion, commitment, major)).shaped.<>({r=>import r._; _1.map(_=> ProfileRow.tupled((_1.get, _2.get, _3.get, _4.get, _5, _6, _7, _8, _9, _10, _11, _12, _13)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = ((Rep.Some(profileId), Rep.Some(username), Rep.Some(firstName), Rep.Some(lastName), bio, photoUrl, gender, year, greekAssociation, religion, commitment, major)).shaped.<>({r=>import r._; _1.map(_=> ProfileRow.tupled((_1.get, _2.get, _3.get, _4.get, _5, _6, _7, _8, _9, _10, _11, _12)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column profile_id SqlType(serial), AutoInc, PrimaryKey */
     val profileId: Rep[Int] = column[Int]("profile_id", O.AutoInc, O.PrimaryKey)
@@ -164,8 +163,6 @@ trait Tables {
     val firstName: Rep[String] = column[String]("first_name", O.Length(50,varying=true))
     /** Database column last_name SqlType(varchar), Length(50,true) */
     val lastName: Rep[String] = column[String]("last_name", O.Length(50,varying=true))
-    /** Database column birthdate SqlType(date), Default(None) */
-    val birthdate: Rep[Option[java.sql.Date]] = column[Option[java.sql.Date]]("birthdate", O.Default(None))
     /** Database column bio SqlType(varchar), Length(500,true), Default(None) */
     val bio: Rep[Option[String]] = column[Option[String]]("bio", O.Length(500,varying=true), O.Default(None))
     /** Database column photo_url SqlType(varchar), Length(200,true), Default(None) */

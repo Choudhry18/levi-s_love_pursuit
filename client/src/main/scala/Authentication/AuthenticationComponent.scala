@@ -16,17 +16,18 @@ import models.ReadsAndWrites._
 
 @react class AuthenticationComponent extends Component {
   type Props = Unit
-  case class State(loginName : String, loginPass : String, createName : String, createPass : String)
-  def initialState: State = State("", "", "", "")
+  case class State(loginName : String, loginPass : String, createEmail: String, createName : String, createPass : String)
+  def initialState: State = State("", "", "", "", "")
 
   implicit val ec = scala.concurrent.ExecutionContext.global
   val csrfToken = document.getElementById("csrfToken").asInstanceOf[html.Input].value
   val validateRoute = document.getElementById("validateRoute").asInstanceOf[html.Input].value
   val createRoute = document.getElementById("createRoute").asInstanceOf[html.Input].value
   val homePageRoute = document.getElementById("homePageRoute").asInstanceOf[html.Input].value
+  val onboardingRoute = document.getElementById("onboardingRoute").asInstanceOf[html.Input].value
 
   def login(): Unit = {
-    val data = models.UserData(state.loginName, state.loginPass)
+    val data = models.UserData(null, state.loginName, state.loginPass)
     FetchJson.fetchPost(validateRoute, csrfToken, data, (bool : Boolean) => {
       if (bool) {
         println("worked")
@@ -38,13 +39,13 @@ import models.ReadsAndWrites._
   }
 
   def createUser(): Unit = {
-    val data = models.UserData(state.createName, state.createPass)
+    val data = models.UserData(state.createEmail, state.createName, state.createPass)
     FetchJson.fetchPost(createRoute, csrfToken, data, (bool : Boolean) => {
       if (bool) {
         println("worked")
-        window.location.assign(homePageRoute)
+        window.location.assign(onboardingRoute)
       } else {
-        window.alert("Wrong user name or password")
+        window.alert("Username or email already exist")
       }
     })
   }
@@ -60,8 +61,10 @@ import models.ReadsAndWrites._
       button("Submit", onClick := (e => login())),
       h1("Create User"),
       br(),
+      span("Email: "),
+      input(`type`:="text", onChange := (e => setState(state.copy(createEmail = e.target.value)))),
       span("Username: "),
-      input(`type`:="text", id:="createName", onChange := (e => setState(state.copy(createName = e.target.value)))),
+      input(`type`:="text", onChange := (e => setState(state.copy(createName = e.target.value)))),
       span("Password: "),
       input(`type`:="password", id:="createPass", onChange := (e => setState(state.copy(createPass = e.target.value)))),
       button("Submit", onClick := (e => createUser())),

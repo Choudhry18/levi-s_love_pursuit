@@ -3,9 +3,9 @@ package controllers
 import javax.inject._
 
 import play.api.mvc._
-import play.api.libs.json.Json
+import models.AuthenModel
 import play.api.libs.json._
-import models.UserMessage
+import models._
 import models.ReadsAndWrites._
 
 //database
@@ -16,15 +16,16 @@ import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import play.api.db.slick.HasDatabaseConfigProvider
 import play.api.db.slick.DatabaseConfigProvider
-import models.UserChats
-import models.ChatContent
-import models.RequestStatus
 
 
 @Singleton
-class ChatController @Inject() (protected val dbConfigProvider: DatabaseConfigProvider, cc: ControllerComponents)(implicit ec: ExecutionContext) 
+class OnboardingController @Inject() (protected val dbConfigProvider: DatabaseConfigProvider, cc: ControllerComponents)(implicit ec: ExecutionContext) 
     extends AbstractController(cc) with HasDatabaseConfigProvider[JdbcProfile] {
-  private val dbModel = new models.ChatModel(db) 
+
+  def load = Action { implicit request =>
+      Ok(views.html.onboarding())
+  }
+
   def withJsonBody[A](f: A => Future[Result])(implicit request: Request[AnyContent], reads: Reads[A]) : Future[Result] = {
     request.body.asJson.map { body =>
       Json.fromJson[A](body) match {
@@ -39,36 +40,41 @@ class ChatController @Inject() (protected val dbConfigProvider: DatabaseConfigPr
       Future.successful(Redirect(routes.HomeController.load))
     }
   }
-  
+
   def withSessionUsername(f: String => Future[Result])(expireProcess: Result)(implicit request: Request[AnyContent]) = {
     request.session.get("username").map(f).getOrElse(Future.successful(expireProcess))
   }
   
-  // def load = Action { implicit request =>
-  //   Ok(views.html.chat())
-  // }
+  private val dbModel = new OnboardingModel(db)
 
-  def chats = Action.async { implicit request =>
-    withSessionUsername{ username => 
-      dbModel.getChats(username).map(userChats => Ok(Json.toJson(UserChats(userChats))))
-    }(Ok(Json.toJson(UserChats(Nil, expired = true))))
-  }
-
-  //TODO: session expire handle
-  def getChatContent = Action.async { implicit request =>
+  def createPreference = Action.async { implicit request =>
     withSessionUsername{ username =>
-      withJsonBody[String]{ recipient =>
-        dbModel.getChatContent(username, recipient).map(chatContent => Ok(Json.toJson(ChatContent(chatContent))))
+      withJsonBody[PreferenceData] 
+      { pd =>
+          dbModel.createPreference(pd, username).map { success =>
+            if (success) {
+                Ok(Json.toJson(true))
+            } else {
+                Ok(Json.toJson(false))
+            }
+          }
       }
-    }(Ok(Json.toJson(ChatContent(Nil, true))))
+    }(Ok(Json.toJson(false)))
   }
 
-  def sendMessage = Action.async { implicit request =>
-    withSessionUsername{ sender => 
-      withJsonBody[UserMessage] { um =>
-        dbModel.addMessage(sender, um.username, um.message) 
-        Future.successful(Ok(Json.toJson(RequestStatus(true))))
+  def createProfile = Action.async {implicit request =>
+    withSessionUsername{ username =>
+      withJsonBody[ProfileData] 
+      { pd => 
+        dbModel.createProfile(pd, username).map { success =>
+          if (success) {
+              Ok(Json.toJson(true))
+          } else {
+              Ok(Json.toJson(false))
+          }
+        }
       }
-    }(Ok(Json.toJson(RequestStatus(false, true))))
+    }(Ok(Json.toJson(false)))
   }
+
 }

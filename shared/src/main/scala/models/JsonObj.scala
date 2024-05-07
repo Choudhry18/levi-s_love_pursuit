@@ -2,9 +2,10 @@ package models
 
 import play.api.libs.json.Json
 
-case class UserData(username: String, password: String, expired: Boolean = false) 
-case class UserMessage(username: String, message: String, expired: Boolean = false)
+case class UserData(email: String, username: String, password: String, expired: Boolean = false) 
+case class UserMessage(username: String, message: String)
 case class UserChats(chats: Seq[String], expired: Boolean = false)
+
 case class ProfileData(
   username: String,
   firstName: String,
@@ -18,8 +19,9 @@ case class ProfileData(
   commitment: Option[String],
   major: Option[String]
 )
+case class ChatContent(content: Seq[UserMessage], expired: Boolean = false)
+case class RequestStatus(success: Boolean, expired: Boolean = false)
 case class PreferenceData(
-  username: String,
   gender: String,
   year: String,
   greekPreference: String,
@@ -27,6 +29,8 @@ case class PreferenceData(
   commitment: String,
   major: String
 )
+
+
 
 object ReadsAndWrites {
   implicit val userDataReads = Json.reads[UserData]
@@ -39,4 +43,8 @@ object ReadsAndWrites {
   implicit val preferenceDataWrites = Json.writes[PreferenceData]
   implicit val profileDataReads = Json.reads[ProfileData]
   implicit val profileDataWrites = Json.writes[ProfileData]
+  implicit val chatContentReads = Json.reads[ChatContent]
+  implicit val chatContentWrites = Json.writes[ChatContent]
+  implicit val statusReads = Json.reads[RequestStatus]
+  implicit val statusWrites = Json.writes[RequestStatus]
 }
