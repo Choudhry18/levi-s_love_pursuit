@@ -14,8 +14,8 @@ class OnboardingModel(db: Database)(implicit ec: ExecutionContext) {
 
 
   def createProfile(pd: ProfileData, username: String): Future[Boolean] = {
-    val action = (Profile += ProfileRow(0, username, pd.firstName, pd.lastName, Option(pd.bio), null, Option(pd.gender), Option(pd.year), 
-    Option(pd.greek_association), Option(pd.religion), Option(pd.commitment), Option(pd.major)))
+    val action = (Profile += ProfileRow(0, username, pd.firstName, pd.lastName, pd.bio, None, pd.gender, pd.year, 
+    pd.greekAssociation, pd.religion, pd.commitment, pd.major))
     db.run(action).map(_ > 0)
   }
 

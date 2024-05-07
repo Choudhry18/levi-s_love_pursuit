@@ -15,6 +15,9 @@ import org.scalajs.dom.Blob
 import scala.annotation.switch
 import org.scalajs.dom.File
 import org.scalajs.dom
+import models.ProfileData
+import models.UserMessage
+import models.UserData
 
 // Main Onboarding component that switches between profile component and preference component
 @react class OnboardingComponent extends Component {
@@ -38,46 +41,72 @@ import org.scalajs.dom
 @react class ProfileComponent extends Component {
   case class Props(switchOnboarding: () => Unit)
 
-  case class State( firstName: String, lastName: String, bio: String, photo: File, gender: String, 
+  case class State( email: String, username: String, password: String, firstName: String, lastName: String, bio: String, photo: File, gender: String, 
     year: String, greek_association: String, religion: String, commitment: String, major: String
   )
 
-  def initialState: State = State("", "", "", null, "", "", "", "", "", "")
+  def initialState: State = State("","","","", "", "", null, "", "", "", "", "", "")
 
   val profileRoute = document.getElementById("profileRoute").asInstanceOf[html.Input].value
   val csrfToken = document.getElementById("csrfToken").asInstanceOf[html.Input].value
   val uploadPhoto = document.getElementById("uploadPhoto").asInstanceOf[html.Input].value
+  val createRoute = document.getElementById("createRoute").asInstanceOf[html.Input].value
   implicit val ec = scala.concurrent.ExecutionContext.global
 
   def submitProfile() : Unit = {
     if (state.firstName.isEmpty() || state.lastName.isEmpty()) {
       window.alert("fill out first and last name before submitting")
     } else {
-      val data = models.ProfileData( state.firstName, state.lastName, state.bio, state.gender, 
-      state.year, state.greek_association, state.religion, state.commitment, state.major)
+      val data = ProfileData(
+      state.username,
+      state.firstName,
+      state.lastName,
+      if (state.bio.isEmpty) None else Some(state.bio),
+      None, // photoUrl is not provided in State
+      Option(state.gender),
+      Option(state.year),
+      if (state.greek_association.isEmpty) None else Some(state.greek_association),
+      if (state.religion.isEmpty) None else Some(state.religion),
+      if (state.commitment.isEmpty) None else Some(state.commitment),
+      if (state.major.isEmpty) None else Some(state.major)
+      )
 
-      FetchJson.fetchPost(profileRoute, csrfToken, data, (bool: Boolean) => {
-        if (bool) {
-          println("Profile saved")
-          props.switchOnboarding()
+      FetchJson.fetchPost(createRoute, csrfToken, UserData(state.email, state.username, state.password), (success: Boolean) => {
+        if (!success) {
+          window.alert("User or email already exists")
         } else {
-          window.alert("Failed to save preferences")
+          FetchJson.fetchPost(profileRoute, csrfToken, data, (bool: Boolean) => {
+            if (bool) {
+              println("Profile saved")
+              props.switchOnboarding()
+            } else {
+              window.alert("Failed to save preferences")
+            }
+          })
+
+          val xhr = new dom.XMLHttpRequest()
+          xhr.open("POST", uploadPhoto)
+          xhr.setRequestHeader("Csrf-Token", csrfToken)
+          // xhr.onload = { (e: dom.Event) => 
+          //     success(xhr.response)}
+          xhr.send(state.photo)
         }
       })
-
-      val xhr = new dom.XMLHttpRequest()
-      xhr.open("POST", uploadPhoto)
-      xhr.setRequestHeader("Csrf-Token", csrfToken)
-      // xhr.onload = { (e: dom.Event) => 
-      //     success(xhr.response)}
-      xhr.send(state.photo)
-
     }
   }
 
   def render(): ReactElement = {
     div(id := "onboarding-section",
       h1("Your profile"),
+      br(),
+      span("Email: "),
+      input(`type` := "text", value := state.email, onChange := (e => setState(state.copy(email = e.target.value)))),
+      br(),
+      span("Username: "),
+      input(`type` := "text", value := state.username, onChange := (e => setState(state.copy(username = e.target.value)))),
+      br(),
+      span("Password: "),
+      input(`type` := "password", value := state.password, onChange := (e => setState(state.copy(password = e.target.value)))),
       br(),
       span("First Name: "),
       input(`type` := "text", value := state.firstName, onChange := (e => setState(state.copy(firstName = e.target.value)))),

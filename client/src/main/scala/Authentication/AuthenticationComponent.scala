@@ -61,13 +61,7 @@ import models.ReadsAndWrites._
       button("Submit", onClick := (e => login())),
       h1("Create User"),
       br(),
-      span("Email: "),
-      input(`type`:="text", onChange := (e => setState(state.copy(createEmail = e.target.value)))),
-      span("Username: "),
-      input(`type`:="text", onChange := (e => setState(state.copy(createName = e.target.value)))),
-      span("Password: "),
-      input(`type`:="password", id:="createPass", onChange := (e => setState(state.copy(createPass = e.target.value)))),
-      button("Submit", onClick := (e => createUser())),
+      button("Submit", onClick := (e => window.location.assign(onboardingRoute))),
     )
   }                          
 }

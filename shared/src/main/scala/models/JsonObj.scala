@@ -11,7 +11,7 @@ case class ProfileData(
   firstName: String,
   lastName: String, // Use Option for nullable fields
   bio: Option[String],
-  photoUrl: Option[String],
+  photo: Option[Array[Byte]],
   gender: Option[String],
   year: Option[String],
   greekAssociation: Option[String],
