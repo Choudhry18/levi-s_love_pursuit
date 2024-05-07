@@ -23,7 +23,7 @@ class MatchModel(db: Database)(implicit ec: ExecutionContext) {
       row.firstName,
       row.lastName,
       row.bio,
-      row.photoUrl,
+      row.photo,
       row.gender,
       row.year,
       row.greekAssociation,

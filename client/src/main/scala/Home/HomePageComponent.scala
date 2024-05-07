@@ -21,8 +21,6 @@ import org.scalajs.dom.WebSocket
   implicit val ec = scala.concurrent.ExecutionContext.global
   
   lazy val chatPageComponent: ReactElement = ChatPageComponent(state.socket)
-
-  lazy val chatPageComponent: ReactElement = ChatPageComponent()
   lazy val matchingPageComponenet: ReactElement = MatchingPageComponent()
   val pages: Map[String, ReactElement] =  Map("Matching" -> matchingPageComponenet, "Profile" -> chatPageComponent, "Chat" -> chatPageComponent)
 
