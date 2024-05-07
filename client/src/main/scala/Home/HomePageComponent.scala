@@ -22,7 +22,10 @@ import org.scalajs.dom.WebSocket
   
   lazy val chatPageComponent: ReactElement = ChatPageComponent(state.socket)
 
-  val pages: Map[String, ReactElement] =  Map("MATCHING" -> chatPageComponent, "PROFILE" -> chatPageComponent, "CHAT" -> chatPageComponent)
+  lazy val chatPageComponent: ReactElement = ChatPageComponent()
+  lazy val matchingPageComponenet: ReactElement = MatchingPageComponent()
+  val pages: Map[String, ReactElement] =  Map("Matching" -> matchingPageComponenet, "Profile" -> chatPageComponent, "Chat" -> chatPageComponent)
+
   def selectPage(): ReactElement = pages.get(state.page)
 
   window.onunload = { event =>

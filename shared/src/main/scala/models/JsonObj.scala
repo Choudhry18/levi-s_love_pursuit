@@ -5,6 +5,20 @@ import play.api.libs.json.Json
 case class UserData(email: String, username: String, password: String, expired: Boolean = false) 
 case class UserMessage(username: String, message: String)
 case class UserChats(chats: Seq[String], expired: Boolean = false)
+
+case class ProfileData(
+  username: String,
+  firstName: String,
+  lastName: String, // Use Option for nullable fields
+  bio: Option[String],
+  photoUrl: Option[String],
+  gender: Option[String],
+  year: Option[String],
+  greekAssociation: Option[String],
+  religion: Option[String],
+  commitment: Option[String],
+  major: Option[String]
+)
 case class ChatContent(content: Seq[UserMessage], expired: Boolean = false)
 case class RequestStatus(success: Boolean, expired: Boolean = false)
 case class PreferenceData(
@@ -15,18 +29,7 @@ case class PreferenceData(
   commitment: String,
   major: String
 )
-case class ProfileData(
-  firstName: String,
-  lastName: String,
-  bio: String,
-  photo: String,
-  gender: String,
-  year: String,
-  greek_association: String,
-  religion: String,
-  commitment: String,
-  major: String
-)
+
 
 
 object ReadsAndWrites {

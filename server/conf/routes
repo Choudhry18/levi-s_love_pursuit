@@ -23,6 +23,10 @@ GET        /onboarding                  controllers.OnboardingController.load
 POST       /createPreference            controllers.OnboardingController.createPreference
 POST      /createProfile                controllers.OnboardingController.createProfile
 
+# Match
+
+POST       /getProfiles                 controllers.MatchingController.getProfiles
+
 # Prefix must match `play.assets.urlPrefix`
 GET        /assets/*file                 controllers.Assets.at(file)
 GET        /versionedAssets/*file        controllers.Assets.versioned(path="/public", file: Asset)
