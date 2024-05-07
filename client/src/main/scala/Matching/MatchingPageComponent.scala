@@ -12,12 +12,14 @@ import slinky.web.html._
 import models.UserChats
 import models.ReadsAndWrites._
 import models.ProfileData
-
+import org.scalajs.dom.raw.URL
 import org.scalajs.dom.KeyboardEvent
 import _root_.playscala.FetchJson.fetchPost
 import models.RequestStatus
 import models.SwipeResult
-
+import scalajs.js.typedarray.AB2TA
+import org.scalajs.dom.raw.Blob
+import scala.scalajs.js
 
 
 @react class MatchingPageComponent extends Component {
@@ -62,10 +64,19 @@ import models.SwipeResult
     FetchJson.fetchGet(matchRoute,
       (matchContent: Seq[ProfileData]) => {
         profiles = matchContent
+        println(profiles(0).firstName)
         forceUpdate()
       }
     )
   }
+
+    def makePhoto(data: Option[Array[Byte]]) : String = {
+        val url = data match {
+            case Some(pArray) => URL.createObjectURL(new Blob(js.Array(pArray.toTypedArray)))
+            case None => "/assets/images/favicon.png"
+        }
+        return url
+    }
 
     def render(): ReactElement = {
         if (profiles.isEmpty) {
@@ -83,6 +94,8 @@ import models.SwipeResult
                 div(
                 id := "profileContent", // ID for the profile content
                 h3("Profile"),
+                div(id := "image-container")(
+                    img(src := makePhoto(profiles(state.currentIndex).photo), id := "profile-image")),
                 p(s"Username: ${profiles(state.currentIndex).username}"),
                 p(s"First Name: ${profiles(state.currentIndex).firstName}"),
                 p(s"Last Name: ${profiles(state.currentIndex).lastName}")
@@ -94,3 +107,5 @@ import models.SwipeResult
   }
 
 }
+
+
