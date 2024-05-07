@@ -40,6 +40,7 @@ import scala.scalajs.js
     FetchJson.fetchPost(matchRoute, csrfToken, "hehe",
       (matchContent: Seq[ProfileData]) => {
         profiles = matchContent
+        println(profiles(0).firstName)
         forceUpdate()
       }
     )
