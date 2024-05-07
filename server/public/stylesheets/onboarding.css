@@ -7,6 +7,10 @@ body {
     color: #333;
 }
 
+span {
+  color: #410E3B;
+}
+
 /* Onboarding section styling */
 #onboarding-section {
     background-color: white;
@@ -18,19 +22,36 @@ body {
 
 /* Onboarding form header */
 #onboarding-section h1 {
-    color: #5c67f2;
+    color: #410E3B;
+}
+
+#bioInput {
+    height: auto;
+    max-height: 40px;
 }
 
 /* Form element styling */
 input[type="text"],
 input[type="password"],
 button {
+    color: #410E3B;
     width: calc(100% - 22px);
     padding: 10px;
     margin-top: 8px;
     margin-bottom: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
+}
+
+select {
+  color: #410E3B;
+  width: calc(100%);
+  padding: 10px;
+  padding-right: 13px;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 /* Button specific styling */
@@ -43,6 +64,18 @@ button {
 
 button:hover {
     background-color: #60335B;
+}
+
+#yearContainer {
+  display: flex;
+  justify-content: center;
+}
+.yearButton {
+  width: fit-content;
+  flex-grow: 1;
+  flex-basis: 0;
+  margin-right: 10px;
+
 }
 
 /* Small screen / responsive adjustments */

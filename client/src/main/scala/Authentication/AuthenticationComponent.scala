@@ -61,7 +61,7 @@ import models.ReadsAndWrites._
       button("Submit", onClick := (e => login())),
       h1("Create User"),
       br(),
-      button("Submit", onClick := (e => window.location.assign(onboardingRoute))),
+      button("Create New Account", onClick := (e => window.location.assign(onboardingRoute))),
     )
   }                          
 }

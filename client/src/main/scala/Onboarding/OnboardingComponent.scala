@@ -51,24 +51,23 @@ import models.UserData
   val csrfToken = document.getElementById("csrfToken").asInstanceOf[html.Input].value
   val uploadPhoto = document.getElementById("uploadPhoto").asInstanceOf[html.Input].value
   val createRoute = document.getElementById("createRoute").asInstanceOf[html.Input].value
+  
   implicit val ec = scala.concurrent.ExecutionContext.global
 
+  override def componentDidUpdate(prevProps: Props, prevState: State): Unit = {
+    println(state.year)
+  }
+
   def submitProfile() : Unit = {
-    if (state.firstName.isEmpty() || state.lastName.isEmpty()) {
-      window.alert("fill out first and last name before submitting")
+    if (state.firstName.isEmpty() || state.lastName.isEmpty() || state.email.isEmpty() || state.username.isEmpty() || state.password.isEmpty()) {
+      window.alert("fill out the red boxes")
+      val requiredFields = document.getElementsByClassName("required")
+      requiredFields.foreach(element => 
+        element.setAttribute("style", "border-color:red;")
+      )
     } else {
-      val data = ProfileData(
-      state.username,
-      state.firstName,
-      state.lastName,
-      if (state.bio.isEmpty) None else Some(state.bio),
-      None, // photoUrl is not provided in State
-      Option(state.gender),
-      Option(state.year),
-      if (state.greek_association.isEmpty) None else Some(state.greek_association),
-      if (state.religion.isEmpty) None else Some(state.religion),
-      if (state.commitment.isEmpty) None else Some(state.commitment),
-      if (state.major.isEmpty) None else Some(state.major)
+      val data = ProfileData( state.username, state.firstName, state.lastName, Option(state.bio), None, // photoUrl is not provided in State 
+      Option(state.gender), Option(state.year), Option(state.greek_association), Option(state.religion), Option(state.commitment), Option(state.major)
       )
 
       FetchJson.fetchPost(createRoute, csrfToken, UserData(state.email, state.username, state.password), (success: Boolean) => {
@@ -89,53 +88,64 @@ import models.UserData
           xhr.setRequestHeader("Csrf-Token", csrfToken)
           val formData = new dom.FormData()
           formData.append("fieldName",state.photo)
-          // xhr.onload = { (e: dom.Event) => 
-          //     success(xhr.response)}
           xhr.send(formData)
         }
       })
     }
   }
 
+  val years = List("Rather not share", "Freshman", "Sophomore", "Junior", "Senior")
+  val greeks = List("Rather not share", "Bengal Lancers", "Chi Delta Tau", "Iota Chi Rho", "Kappa Kappa Delta", 
+  "Omega Phi", "Phi Sigma Chi", "Triniteers", "Alpha Chi Lambda", "Chi Beta Epsilon", 
+  "Delta Theta Nu", "Gamma Chi Delta", "Phi Delta Kappa", "Sigma Theta Tau", "Spurs Sorority", "Zeta Chi")
+  val commitments = List("Rather not share", "Just here to have fun", "Figuring it out", "Long-term relationship")
+
   def render(): ReactElement = {
     div(id := "onboarding-section",
       h1("Your profile"),
       br(),
       span("Email: "),
-      input(`type` := "text", value := state.email, onChange := (e => setState(state.copy(email = e.target.value)))),
+      input(`type` := "text", className := "required", value := state.email, onChange := (e => setState(state.copy(email = e.target.value)))),
       br(),
       span("Username: "),
-      input(`type` := "text", value := state.username, onChange := (e => setState(state.copy(username = e.target.value)))),
+      input(`type` := "text", className := "required", value := state.username, onChange := (e => setState(state.copy(username = e.target.value)))),
       br(),
       span("Password: "),
-      input(`type` := "password", value := state.password, onChange := (e => setState(state.copy(password = e.target.value)))),
+      input(`type` := "password", className := "required", value := state.password, onChange := (e => setState(state.copy(password = e.target.value)))),
       br(),
       span("First Name: "),
-      input(`type` := "text", value := state.firstName, onChange := (e => setState(state.copy(firstName = e.target.value)))),
+      input(`type` := "text", className := "required", value := state.firstName, onChange := (e => setState(state.copy(firstName = e.target.value)))),
       br(),
       span("Last Name: "),
-      input(`type` := "text", value := state.lastName, onChange := (e => setState(state.copy(lastName = e.target.value)))),
+      input(`type` := "text", className := "required", value := state.lastName, onChange := (e => setState(state.copy(lastName = e.target.value)))),
       br(),
       span("Bio: "),
-      input(`type` := "text", value := state.bio, onChange := (e => setState(state.copy(bio = e.target.value)))),
+      input(`type` := "text", id := "bioInput", value := state.bio, onChange := (e => setState(state.copy(bio = e.target.value)))),
       br(),
       span("Photo: "),
       input(`type` := "file", onChange := (e => setState(state.copy(photo = e.target.files(0))))),
+      br(),
       br(),
       span("Gender: "),
       input(`type` := "text", value := state.gender, onChange := (e => setState(state.copy(gender = e.target.value)))),
       br(),
       span("Year: "),
-      input(`type` := "text", value := state.year, onChange := (e => setState(state.copy(year = e.target.value)))),
+      select(value := state.year, onChange := (e => setState(state.copy(year = e.target.value))))(
+        years.map(yr => option(value := {if (yr == "Rather not share") "" else yr}, key := yr)(yr))
+      ),
       br(),
       span("Greek Life Participation: "),
-      input(`type` := "text", value := state.greek_association, onChange := (e => setState(state.copy(greek_association = e.target.value)))),
+      select(value := state.greek_association, onChange := (e => setState(state.copy(greek_association = e.target.value))))(
+        greeks.map(greek => option(value := {if (greek == "Rather not share") "" else greek}, key := greek)(greek))
+      ),
+      br(),
+      span("Commitment: "),
+      select(value := state.commitment, onChange := (e => setState(state.copy(commitment = e.target.value))))(
+        commitments.map(com => option(value := {if (com == "Rather not share") "" else com}, key := com)(com))
+      ),
       br(),
       span("Religion: "),
       input(`type` := "text", value := state.religion, onChange := (e => setState(state.copy(religion = e.target.value)))),
-      br(),
-      span("Commitment: "),
-      input(`type` := "text", value := state.commitment, onChange := (e => setState(state.copy(commitment = e.target.value)))),
       br(),
       span("Major: "),
       input(`type` := "text", value := state.major, onChange := (e => setState(state.copy(major = e.target.value)))),
