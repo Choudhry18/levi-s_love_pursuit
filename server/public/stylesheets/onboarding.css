@@ -35,14 +35,14 @@ button {
 
 /* Button specific styling */
 button {
-    background-color: #5c67f2;
+    background-color: #410E3B;
     color: white;
     border: none;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #4a54e1;
+    background-color: #60335B;
 }
 
 /* Small screen / responsive adjustments */

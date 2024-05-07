@@ -2,7 +2,7 @@ package models
 
 import play.api.libs.json.Json
 
-case class UserData(username: String, password: String, expired: Boolean = false) 
+case class UserData(email: String, username: String, password: String, expired: Boolean = false) 
 case class UserMessage(username: String, message: String)
 case class UserChats(chats: Seq[String], expired: Boolean = false)
 case class ChatContent(content: Seq[UserMessage], expired: Boolean = false)

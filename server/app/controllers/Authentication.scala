@@ -56,7 +56,8 @@ class Authentication @Inject() (protected val dbConfigProvider: DatabaseConfigPr
 
   def createUser() = Action.async { implicit request =>
     withJsonBody[UserData]{ud => 
-      dbModel.createUser(ud.username, ud.password, "arbemail@trinity.edu").map { success =>
+      println(ud.email)
+      dbModel.createUser(ud.username, ud.password, ud.email).map { success =>
         if (success) {
           Ok(Json.toJson(true)).withSession("username" -> ud.username, "csrfToken" -> play.filters.csrf.CSRF.getToken.get.value)
         } else {
