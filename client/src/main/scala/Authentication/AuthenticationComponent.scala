@@ -27,7 +27,7 @@ import models.ReadsAndWrites._
   val onboardingRoute = document.getElementById("onboardingRoute").asInstanceOf[html.Input].value
 
   def login(): Unit = {
-    val data = models.UserData(null, state.loginName, state.loginPass)
+    val data = models.UserData("", state.loginName, state.loginPass)
     FetchJson.fetchPost(validateRoute, csrfToken, data, (bool : Boolean) => {
       if (bool) {
         println("worked")

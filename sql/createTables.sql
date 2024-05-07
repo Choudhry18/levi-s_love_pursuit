@@ -19,7 +19,7 @@ CREATE TABLE profile (
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     bio VARCHAR(500),
-    photo_url VARCHAR(200),
+    photo BYTEA,
     gender VARCHAR(50),
     year VARCHAR(50),
     greek_association VARCHAR(50),

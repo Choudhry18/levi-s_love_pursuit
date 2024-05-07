@@ -13,9 +13,9 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 import slick.jdbc.PostgresProfile.api._
 import slick.jdbc.JdbcProfile
-import slick.jdbc.PostgresProfile.api._
 import play.api.db.slick.HasDatabaseConfigProvider
 import play.api.db.slick.DatabaseConfigProvider
+import akka.util.ByteString
 
 
 @Singleton
@@ -74,6 +74,14 @@ class OnboardingController @Inject() (protected val dbConfigProvider: DatabaseCo
           }
         }
       }
+    }(Ok(Json.toJson(false)))
+  }
+
+  def uploadPhoto = Action.async {implicit request => 
+    withSessionUsername{ username =>
+      val maybeBytes: Option[ByteString] = request.body.asRaw.flatMap(rb => rb.asBytes())
+      val byteArray: Array[Byte] = maybeBytes.map(_.toArray).getOrElse(Array.emptyByteArray) 
+      dbModel.uploadPhoto(byteArray, username).map(bool => Ok(Json.toJson(bool)))
     }(Ok(Json.toJson(false)))
   }
 

@@ -19,7 +19,6 @@ case class ProfileData(
   firstName: String,
   lastName: String,
   bio: String,
-  photo: String,
   gender: String,
   year: String,
   greek_association: String,
