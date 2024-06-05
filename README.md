@@ -4,8 +4,8 @@ This was the final project for Trinity University CSCI-3345 (Web Applications) a
 
 Contrbuters:
 
-Choudhry Abdullah
-Levi Le
-Kevin Han
-Harry
+- Choudhry Abdullah
+- Levi Le
+- Kevin Han
+- Harry
 
